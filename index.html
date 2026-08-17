@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>特殊来料登记包材</title>
+<style>
+  :root {
+    --primary: #003865;
+    --primary-light: #005490;
+    --accent: #00a0e3;
+    --danger: #c0392b;
+    --danger-light: #fdf2f2;
+    --warning: #e67e22;
+    --warning-light: #fef9f0;
+    --bg: #f4f6f8;
+    --card: #ffffff;
+    --text: #1a1a2e;
+    --text-muted: #6b7280;
+    --border: #e5e7eb;
+    --nav-w: 260px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── 顶栏 ── */
+  header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: var(--primary);
+    color: #fff;
+    height: 56px;
+    display: flex; align-items: center; padding: 0 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.25);
+  }
+  header h1 { font-size: 1.05rem; font-weight: 600; letter-spacing: .5px; }
+  header .badge {
+    margin-left: 12px;
+    background: var(--accent);
+    font-size: .7rem; padding: 2px 8px; border-radius: 999px;
+    font-weight: 500;
+  }
+  .menu-btn {
+    display: none; margin-right: 12px;
+    background: none; border: none; cursor: pointer;
+    color: #fff; font-size: 1.4rem; line-height: 1;
+  }
+
+  /* ── 导航 ── */
+  nav {
+    position: fixed; top: 56px; left: 0; bottom: 0;
+    width: var(--nav-w);
+    background: var(--primary);
+    overflow-y: auto;
+    padding: 16px 0 32px;
+    transition: transform .25s ease;
+    z-index: 90;
+  }
+  nav .nav-label {
+    font-size: .68rem; color: rgba(255,255,255,.45);
+    text-transform: uppercase; letter-spacing: 1px;
+    padding: 0 20px 8px;
+  }
+  nav a {
+    display: block; padding: 10px 20px;
+    color: rgba(255,255,255,.78);
+    text-decoration: none; font-size: .88rem;
+    border-left: 3px solid transparent;
+    transition: all .15s;
+    line-height: 1.4;
+  }
+  nav a:hover { background: rgba(255,255,255,.08); color: #fff; }
+  nav a.active {
+    background: rgba(0,160,227,.18);
+    border-left-color: var(--accent);
+    color: #fff; font-weight: 600;
+  }
+  nav a .num {
+    display: inline-block; width: 20px; height: 20px;
+    background: rgba(255,255,255,.15); border-radius: 50%;
+    text-align: center; line-height: 20px; font-size: .75rem;
+    margin-right: 8px; flex-shrink: 0;
+  }
+  nav a.danger-link .num { background: rgba(192,57,43,.5); }
+  nav a.warning-link .num { background: rgba(230,126,34,.5); }
+
+  /* ── 内容区 ── */
+  main {
+    margin-left: var(--nav-w);
+    padding: 80px 32px 48px;
+    max-width: 1100px;
+  }
+
+  /* ── 模块卡片 ── */
+  .module {
+    background: var(--card);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    margin-bottom: 28px;
+    overflow: hidden;
+    scroll-margin-top: 72px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  }
+  .module-header {
+    display: flex; align-items: center;
+    padding: 16px 24px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: #fff;
+  }
+  .module-header .index {
+    width: 32px; height: 32px;
+    background: rgba(255,255,255,.2);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: .9rem;
+    margin-right: 12px; flex-shrink: 0;
+  }
+  .module-header h2 { font-size: 1rem; font-weight: 600; }
+  .module-body { padding: 20px 24px; }
+
+  /* danger / warning 变体 */
+  .module.danger { border-color: #f5c6c6; }
+  .module.danger .module-header {
+    background: linear-gradient(135deg, #922b21 0%, var(--danger) 100%);
+  }
+  .module.danger .module-body { background: var(--danger-light); }
+  .module.warning { border-color: #f8d7a4; }
+  .module.warning .module-header {
+    background: linear-gradient(135deg, #b7770d 0%, var(--warning) 100%);
+  }
+  .module.warning .module-body { background: var(--warning-light); }
+
+  /* ── 列表 ── */
+  .module-body ul { padding-left: 0; list-style: none; }
+  .module-body ul li {
+    padding: 7px 0 7px 20px;
+    border-bottom: 1px dashed var(--border);
+    position: relative; line-height: 1.65; font-size: .9rem;
+  }
+  .module-body ul li:last-child { border-bottom: none; }
+  .module-body ul li::before {
+    content: "▸";
+    position: absolute; left: 0;
+    color: var(--accent); font-size: .8rem; top: 9px;
+  }
+
+  /* ── 表格 ── */
+  .table-wrap { overflow-x: auto; margin: 8px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: .875rem; }
+  thead tr { background: var(--primary); color: #fff; }
+  thead th { padding: 10px 14px; text-align: left; font-weight: 600; white-space: nowrap; }
+  tbody tr:nth-child(even) { background: #f0f4f8; }
+  tbody tr:hover { background: #dbeafe; }
+  tbody td { padding: 9px 14px; border-bottom: 1px solid var(--border); line-height: 1.5; }
+  .table-group-header td {
+    background: #dce6f0 !important;
+    font-weight: 700; color: var(--primary);
+    font-size: .82rem; letter-spacing: .3px;
+  }
+
+  /* ── 文字强调 ── */
+  .hi { color: var(--primary); font-weight: 700; }
+  .hi-red { color: var(--danger); font-weight: 700; }
+  .hi-orange { color: var(--warning); font-weight: 700; }
+  code {
+    font-family: "Consolas", "Courier New", monospace;
+    background: #eef2f7; color: #4a5568;
+    padding: 1px 6px; border-radius: 4px; font-size: .82rem;
+    word-break: break-all;
+  }
+
+  /* ── 提示块 ── */
+  .note {
+    background: #eff6ff; border-left: 4px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    padding: 10px 14px; font-size: .875rem;
+    margin: 10px 0; line-height: 1.6;
+  }
+  .note-red {
+    background: #fff5f5; border-left-color: var(--danger);
+  }
+  .note-orange {
+    background: #fffbeb; border-left-color: var(--warning);
+  }
+
+  /* ── 次级列表 ── */
+  .sub-list { margin: 8px 0 4px 20px; }
+  .sub-list li::before { content: "–"; color: var(--text-muted); }
+
+  /* ── 标签 ── */
+  .tag {
+    display: inline-block; font-size: .72rem; padding: 2px 7px;
+    border-radius: 4px; margin-right: 4px; font-weight: 600;
+  }
+  .tag-blue { background: #dbeafe; color: #1e40af; }
+  .tag-red  { background: #fee2e2; color: #991b1b; }
+  .tag-orange { background: #fed7aa; color: #9a3412; }
+  .tag-green { background: #d1fae5; color: #065f46; }
+  .tag-gray  { background: #e5e7eb; color: #374151; }
+  .tag-purple { background: #ede9fe; color: #5b21b6; }
+
+  /* ── COO 模块专属 ── */
+  .coo-toolbar {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .coo-toolbar input {
+    flex: 1; min-width: 160px; max-width: 300px;
+    padding: 6px 12px; border: 1px solid var(--border);
+    border-radius: 6px; font-size: .875rem; outline: none;
+  }
+  .coo-toolbar input:focus { border-color: var(--accent); }
+  .filter-btn {
+    padding: 5px 12px; border-radius: 6px; border: 1px solid var(--border);
+    background: #fff; cursor: pointer; font-size: .8rem; font-weight: 600;
+    color: var(--text-muted); transition: all .15s;
+  }
+  .filter-btn.active, .filter-btn:hover {
+    background: var(--primary); color: #fff; border-color: var(--primary);
+  }
+  .coo-badge {
+    display: inline-block; font-size: .72rem; padding: 1px 6px;
+    border-radius: 4px; font-weight: 700; letter-spacing: .3px;
+  }
+  .coo-CN { background: #d1fae5; color: #065f46; }
+  .coo-US { background: #dbeafe; color: #1e40af; }
+  .coo-DE { background: #e5e7eb; color: #1f2937; }
+  .coo-GB { background: #ede9fe; color: #5b21b6; }
+  .coo-FR { background: #fce7f3; color: #9d174d; }
+  .coo-NL { background: #fed7aa; color: #9a3412; }
+  .coo-JP { background: #fee2e2; color: #991b1b; }
+  .coo-MX { background: #d1fae5; color: #065f46; }
+  .coo-ES { background: #fef3c7; color: #92400e; }
+  tr.hidden-row { display: none; }
+
+  /* ── 密码锁 ── */
+  #pw-gate {
+    position: fixed; inset: 0; z-index: 9999;
+    background: var(--primary);
+    display: flex; align-items: center; justify-content: center;
+  }
+  #pw-box {
+    background: #fff; border-radius: 12px;
+    padding: 40px 36px; width: 340px; max-width: 90vw;
+    text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,.35);
+  }
+  #pw-box .pw-icon {
+    width: 48px; height: 48px; margin: 0 auto 16px;
+    background: var(--primary); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #pw-box .pw-icon svg { fill: #fff; width: 24px; height: 24px; }
+  #pw-box h2 { color: var(--primary); font-size: 1.05rem; margin-bottom: 6px; }
+  #pw-box p { color: var(--text-muted); font-size: .85rem; margin-bottom: 20px; }
+  #pw-input {
+    width: 100%; padding: 10px 14px; font-size: 1rem;
+    border: 2px solid var(--border); border-radius: 8px;
+    outline: none; text-align: center; letter-spacing: .15em;
+    margin-bottom: 12px; font-family: inherit;
+  }
+  #pw-input:focus { border-color: var(--accent); }
+  #pw-input.pw-err { border-color: var(--danger); animation: pw-shake .3s; }
+  #pw-btn {
+    width: 100%; padding: 10px; background: var(--primary);
+    color: #fff; border: none; border-radius: 8px;
+    font-size: .95rem; font-weight: 600; cursor: pointer;
+    transition: background .15s; font-family: inherit;
+  }
+  #pw-btn:hover { background: var(--primary-light); }
+  #pw-errmsg { color: var(--danger); font-size: .82rem; margin-top: 8px; min-height: 18px; }
+  @keyframes pw-shake {
+    0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)}
+  }
+
+  /* ── 响应式 ── */
+  @media (max-width: 768px) {
+    .menu-btn { display: block; }
+    nav { transform: translateX(-100%); }
+    nav.open { transform: translateX(0); }
+    main { margin-left: 0; padding: 72px 16px 40px; }
+    .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 80; }
+    .overlay.show { display: block; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 密码锁弹窗 -->
+<div id="pw-gate">
+  <div id="pw-box">
+    <div class="pw-icon">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 8h-1V6A5 5 0 0 0 7 6v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2zm-6 9a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm3.1-9H8.9V6a3.1 3.1 0 0 1 6.2 0v2z"/>
+      </svg>
+    </div>
+    <h2>特殊来料登记包材</h2>
+    <p>请输入访问密码</p>
+    <input id="pw-input" type="password" placeholder="请输入密码"
+           onkeydown="if(event.key==='Enter')checkPW()" autocomplete="current-password">
+    <button id="pw-btn" onclick="checkPW()">进入</button>
+    <div id="pw-errmsg"></div>
+  </div>
+</div>
+
+<!-- 顶栏 -->
+<header>
+  <button class="menu-btn" onclick="toggleNav()" aria-label="菜单">☰</button>
+  <h1>特殊来料登记包材</h1>
+  <span class="badge">11 个模块</span>
+</header>
+
+<!-- 遮罩（移动端） -->
+<div class="overlay" id="overlay" onclick="toggleNav()"></div>
+
+<!-- 左侧导航 -->
+<nav id="nav">
+  <div class="nav-label">章节目录</div>
+  <a href="#sec1" onclick="closeNav()"><span class="num">1</span>RTU 包装袋来料检查</a>
+  <a href="#sec2" onclick="closeNav()"><span class="num">2</span>开放效期物料</a>
+  <a href="#sec3" onclick="closeNav()"><span class="num">3</span>RTU 关键物料收货检查表</a>
+  <a href="#sec4" onclick="closeNav()"><span class="num">4</span>PIS 标签 container 填写</a>
+  <a href="#sec5" onclick="closeNav()"><span class="num">5</span>DG 包材</a>
+  <a href="#sec6" onclick="closeNav()"><span class="num">6</span>QM044 规定</a>
+  <a href="#sec7" onclick="closeNav()"><span class="num">7</span>Pinmill 到货</a>
+  <a href="#sec8" class="danger-link" onclick="closeNav()"><span class="num">8</span>氯气（剧毒）</a>
+  <a href="#sec9" class="warning-link" onclick="closeNav()"><span class="num">9</span>来料收货表（易制毒易制爆）</a>
+  <a href="#sec10" onclick="closeNav()"><span class="num">10</span>需要填 COO 的原料</a>
+  <a href="#sec11" onclick="closeNav()"><span class="num">11</span>PIS 进口包材 COA 要求</a>
+</nav>
+
+<!-- 内容 -->
+<main>
+
+  <!-- ▌模块 1 ▌-->
+  <section class="module" id="sec1">
+    <div class="module-header">
+      <div class="index">1</div>
+      <h2>RTU 包装袋来料检查（碟装袋子）</h2>
+    </div>
+    <div class="module-body">
+      <ul>
+        <li>打印 <strong>QM051-F03</strong> 表格 2–3 页；<span class="note" style="display:inline;border:none;background:none;padding:0;">PS：一个物料 + 一个批次 = 1 张（例：1 个物料 2 个批次就打 2 张）</span>，质量抽检外包装大小、是否有洞等问题。</li>
+        <li>跟 <strong>Alex</strong>（Planning）和 <strong>Xiaowei Zhu</strong>（质量）确定抽检时间。</li>
+        <li>根据抽检结果发放物品状态。<br>
+          <span style="color:var(--text-muted);font-size:.85rem;">1 层包装抽检后无法重复使用，2、3 层须密封后才可退库。</span>
+        </li>
+        <li>转库流程：<strong>LT01</strong>，Q 状态物料，取最小包装量到库位：<strong class="hi">917 Quality</strong></li>
+      </ul>
+      <p style="font-size:.85rem;color:var(--text-muted);margin:14px 0 6px;">对应物料号：</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>物料号</th><th>描述</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>5630710001</td><td>Contact Laminated Sheet 2nd and 3rd pk</td></tr>
+            <tr><td>5630740001</td><td>Contact Laminated Sheet 1st pk</td></tr>
+            <tr><td>5633160001</td><td>Sedi Laminated Sheet 2nd and 3rd pk</td></tr>
+            <tr><td>5633170001</td><td>Sedi Laminated Sheet 1st pk</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ▌模块 2 ▌-->
+  <section class="module" id="sec2">
+    <div class="module-header">
+      <div class="index">2</div>
+      <h2>开放效期物料</h2>
+    </div>
+    <div class="module-body">
+      <div class="note">具体参考 <strong>WH001</strong> 和 <strong>K2</strong>；每一瓶收成一个批次，哪怕 Vendor Batch 都一样。</div>
+
+      <p style="font-size:.85rem;color:var(--text-muted);margin:12px 0 6px;">物料清单：</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Material Code</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td rowspan="5"><span class="tag tag-blue">RTU plate</span></td>
+                <td>5100160000</td><td>Yeast extract Biospringer</td></tr>
+            <tr><td>5102500000</td><td>Meat peptone tryptic digest</td></tr>
+            <tr><td>5100080000</td><td>Casein Peptone trypt</td></tr>
+            <tr><td>5100020000</td><td>Bacteriological Agar</td></tr>
+            <tr><td>5100060000</td><td>Sodium pyruvate for DCM Production</td></tr>
+            <tr><td rowspan="3"><span class="tag tag-blue">RTU bottle</span></td>
+                <td>8170611000</td><td>POLYSORBATE 80</td></tr>
+            <tr><td>1072242500</td><td>PEPTONE FROM MEAT</td></tr>
+            <tr><td>1003122500-CN</td><td>ACIDE CHLORHYDRIQUE 25%</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note" style="margin-top:14px;">
+        <strong>日期格式说明：</strong><br>
+        • RTU poch 袋来料 COA 日期格式：<strong>月 / 日 / 年</strong><br>
+        • IA 来料效期格式：<strong>日 / 月 / 年</strong>
+      </div>
+    </div>
+  </section>
+
+  <!-- ▌模块 3 ▌-->
+  <section class="module" id="sec3">
+    <div class="module-header">
+      <div class="index">3</div>
+      <h2>RTU 关键物料收货检查表</h2>
+    </div>
+    <div class="module-body">
+      <ul>
+        <li>收料后，通知 <strong>Planning</strong> 到货，确认后填写 <strong>QM051-F01</strong> 检验表，并相关人员 GR 已做，<span class="hi-red">不通知 QC 放行！</span></li>
+        <li>填 <strong>only</strong> 的 K2 表。</li>
+        <li>该物料生产领用后，检验成品是否合格，再决定放行。</li>
+      </ul>
+      <p style="font-size:.85rem;color:var(--text-muted);margin:14px 0 6px;">对应物料号：</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>物料号</th><th>物料描述</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1081915000</td><td>Fluid Thioglycollate Medium 5 KG</td></tr>
+            <tr><td>1054595000</td><td>Tryptic Soy Casein-Peptone Soyamea</td></tr>
+            <tr><td>1024363600</td><td>TSA base for heipha 3,6 KG</td></tr>
+            <tr><td>5100020000</td><td>Bacteriological Agar</td></tr>
+            <tr><td>5100160000</td><td>Yeast extract Biospringer</td></tr>
+            <tr><td>5100210000</td><td>Soy lecithin</td></tr>
+            <tr><td>5100380000</td><td>Tween# 80 for synthesis</td></tr>
+            <tr><td>5108160000</td><td>Agar Agar SG/SX/HSA</td></tr>
+            <tr><td>5100080000</td><td>Casein Peptone trypt</td></tr>
+            <tr><td>5102500000</td><td>Meat peptone tryptic digest</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ▌模块 4 ▌-->
+  <section class="module" id="sec4">
+    <div class="module-header">
+      <div class="index">4</div>
+      <h2>PIS 标签 Container 填写参考</h2>
+    </div>
+    <div class="module-body">
+      <ul>
+        <li><strong>PIS 原料、初级包材</strong>：按最小包装量收 Container。</li>
+        <li><strong>包材（纸箱、桶等大件）</strong>：按托盘数收 Container。</li>
+        <li><strong>标签</strong>：按照盒数收。</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ▌模块 5 ▌-->
+  <section class="module" id="sec5">
+    <div class="module-header">
+      <div class="index">5</div>
+      <h2>DG 包材</h2>
+    </div>
+    <div class="module-body">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>物料号</th><th>名称</th></tr>
+          </thead>
+          <tbody>
+            <tr class="table-group-header"><td colspan="2">🚢 进口物料</td></tr>
+            <tr><td>5663400001</td><td>PE 桶 25L</td></tr>
+            <tr><td>5663420001</td><td>PE 桶 70L</td></tr>
+            <tr><td>5663410001</td><td>PE 桶 52L</td></tr>
+            <tr><td>5869980001</td><td>N10 16 加仑 DG 桶</td></tr>
+            <tr><td>5869950001</td><td>N10 55 加仑 DG 桶</td></tr>
+            <tr class="table-group-header"><td colspan="2">🏭 本地物料</td></tr>
+            <tr><td>5762990001</td><td>4 sample kits-DG 1800ml bottle 纸箱</td></tr>
+            <tr><td>5762920001</td><td>6 bottles-DG with 1800ml bottle 纸箱</td></tr>
+            <tr><td>5762930001</td><td>4 bottles-DG with 6000ml bottle 纸箱</td></tr>
+            <tr><td>5762960001</td><td>DG 纸箱</td></tr>
+            <tr><td>5762980001</td><td>6 bottles-DG with 1250ml bottle 纸箱</td></tr>
+            <tr><td>5854800001</td><td>本地 DG 15L 桶盖</td></tr>
+            <tr><td>5854790001</td><td>本地 DG 15L 桶</td></tr>
+            <tr><td>6153540001</td><td>Corrugated box analog-DG without M</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ▌模块 6 ▌-->
+  <section class="module" id="sec6">
+    <div class="module-header">
+      <div class="index">6</div>
+      <h2>QM044 规定</h2>
+    </div>
+    <div class="module-body">
+      <div class="note">
+        物料有效期 / 复测期相关文件：<strong>QM044</strong> 及其附表
+      </div>
+      <p style="margin:12px 0 8px;font-size:.9rem;line-height:1.8;">
+        如果从供应商处<strong>无法给出有效期</strong>，则规定：
+      </p>
+      <ul>
+        <li>原辅料自开瓶后效期：<strong class="hi">1 年</strong></li>
+        <li>包装材料效期：<strong class="hi">5 年</strong></li>
+        <li>DG 包材有效期：<strong class="hi">1 年</strong></li>
+        <li>经过伽玛辐照后的干燥剂：自辐照日期起算 <strong class="hi">2 年</strong></li>
+        <li>Solvent 产品——无水产品原料复测期：<strong class="hi">1 年</strong></li>
+      </ul>
+      <div class="note" style="margin-top:14px;">
+        <strong>包装材料效期特殊规定：</strong><br>
+        • 纸浆泡沫：<strong class="hi">1 年</strong><br>
+        • 玻璃瓶：<strong class="hi">10 年</strong><br>
+        • 垫片：<strong class="hi">3 年</strong><br>
+        • 其余包材：<strong class="hi">5 年</strong><br>
+        • DG 包材：<strong class="hi">1 年</strong>
+      </div>
+    </div>
+  </section>
+
+  <!-- ▌模块 7 ▌-->
+  <section class="module" id="sec7">
+    <div class="module-header">
+      <div class="index">7</div>
+      <h2>Pinmill 到货</h2>
+    </div>
+    <div class="module-body">
+      <p style="font-size:.88rem;font-weight:600;color:var(--primary);margin-bottom:8px;">生产日期 / 有效期确认规则：</p>
+      <ul>
+        <li>生产日期和有效期以 <strong>COA</strong> 为准；如 COA 无 Manufacturing date，以 <strong>Quality Release Date</strong> 作为生产日期。</li>
+        <li>如 COA 上没有效期、但瓶身有，则以 <strong>瓶身效期</strong> 为准。</li>
+        <li>两者都没有的，以<strong>第一次收货日期</strong>作为生产日期（Lenexa 会拍照，此情况很少）。</li>
+        <li>效期为月份时，将当月<strong>最后一天</strong>作为截止日期。</li>
+        <li>Lenexa 提供 BPCS 截图路径：<br><code>\\10.10.101.93\bsc_share\Common\Corporate Quality\GSQ\Vendor Info\Nantong Screen Shots</code></li>
+      </ul>
+
+      <p style="font-size:.88rem;font-weight:600;color:var(--primary);margin:16px 0 8px;">现场核对 &amp; 存放规则：</p>
+      <ul>
+        <li>仓库现场人员须核对实物的 <strong>LNX 批号</strong> &amp; 原厂批号（如有）和邮件通知上的是否一致。</li>
+        <li>单包量在 <strong class="hi">12 KG 以下</strong>的需要存放 <strong>Kardex 货架</strong>。</li>
+        <li>国外到货：<strong>不检测</strong>，COA 电子版由 <strong>Jenny</strong> 放在公盘，Container 都写 <strong>1</strong>。</li>
+        <li>国内到货（需检测）：Container 按照实际填写，物料号 <code>2008038</code>、<code>2004090</code>。</li>
+        <li>国内到货来料检测：<strong>COA 必须提供</strong>且上传 K2（可跟 Jenny 确认最新版国内到货清单）；Container 按最小包装数量填。</li>
+      </ul>
+
+      <p style="font-size:.88rem;font-weight:600;color:var(--primary);margin:16px 0 8px;">文件存放路径：</p>
+      <ul>
+        <li>原生产商 COA（Jenny）：<code>X:\06 - Supply Chain\Pin Mill vendor CoA</code></li>
+        <li>BPCS COA（Ella Chen）：<code>\\cnna2cdotmc101\LSTN\17 - Shared\05 - Quality\18_ Pin mill\Pinmill Giving Site COA</code></li>
+        <li>来料收获表扫描上传：<code>X:\06 - Supply Chain\09-Pin Mill\Pin Mill vendor CoA</code></li>
+        <li>PO（Jenny）：<code>Y:\06 - Supply Chain\02 - Material Planning\21-Pin Mill</code></li>
+      </ul>
+
+      <div class="note" style="margin-top:14px;">
+        <strong>分包原料处理：</strong>只有 LNX 标签，无原厂标签时，需根据 LNX 批号检查 BPCS 的 COA 上两个批号信息，匹配一致后方可使用 Jenny 的原厂 COA 收货。<br>
+        根据 LNX 的 SOP，供应商未提供有效期 / 复测期的，LNX 应手写备注到 COA 上。
+      </div>
+    </div>
+  </section>
+
+  <!-- ▌模块 8 — 危险品 ▌-->
+  <section class="module danger" id="sec8">
+    <div class="module-header">
+      <div class="index">8</div>
+      <h2>⚠ 氯气（剧毒）</h2>
+    </div>
+    <div class="module-body">
+      <div class="note note-red">
+        <strong style="color:var(--danger);">剧毒物料，请严格按照以下规程操作！</strong>
+      </div>
+      <ul style="margin-top:12px;">
+        <li>到手时，生产日期与到货日期的差值应在 <strong class="hi-red">7 天</strong> 以内。</li>
+        <li>有效期：<strong class="hi-red">45 天</strong>。</li>
+        <li>收货后手动上架至库位：<strong class="hi-red">RMP CI-01</strong>。</li>
+        <li>然后再通过 <strong>LT01</strong> 转至 <strong class="hi-red">PS7</strong>。</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ▌模块 9 — 易制毒易制爆 ▌-->
+  <section class="module warning" id="sec9">
+    <div class="module-header">
+      <div class="index">9</div>
+      <h2>⚡ 来料收货表（易制毒 / 易制爆）</h2>
+    </div>
+    <div class="module-body">
+      <div class="note note-orange">
+        收货后须<strong>告知 Congyu</strong>。
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px;">
+        <div>
+          <p style="font-weight:700;color:var(--warning);margin-bottom:8px;font-size:.9rem;">
+            <span class="tag tag-orange">易制毒</span>
+          </p>
+          <ul>
+            <li><strong>罐区：</strong>硫酸、盐酸</li>
+            <li><strong>桶装：</strong>98% 硫酸</li>
+            <li><strong>二期：</strong>甲苯</li>
+          </ul>
+        </div>
+        <div>
+          <p style="font-weight:700;color:var(--danger);margin-bottom:8px;font-size:.9rem;">
+            <span class="tag tag-red">易制爆</span>
+          </p>
+          <ul>
+            <li>双氧水</li>
+            <li>硝酸钾</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ▌模块 10 ▌-->
+  <section class="module" id="sec10">
+    <div class="module-header">
+      <div class="index">10</div>
+      <h2>需要填 COO 的原料</h2>
+    </div>
+    <div class="module-body">
+      <div class="note" style="margin-bottom:14px;">
+        以下原料收货时 PIS 系统须填写 <strong>COO（Country of Origin，原产地）</strong>。共 <strong>60</strong> 条记录，数据更新日期：<strong>2025-04-22</strong>。
+      </div>
+
+      <!-- 工具栏 -->
+      <div class="coo-toolbar">
+        <input type="text" id="cooSearch" placeholder="搜索物料号 / 描述 / 供应商..." oninput="filterCOO()">
+        <button class="filter-btn active" onclick="filterCOOGroup(this,'all')">全部 (60)</button>
+        <button class="filter-btn" onclick="filterCOOGroup(this,'CCM_Bulk')">CCM_Bulk (21)</button>
+        <button class="filter-btn" onclick="filterCOOGroup(this,'PIS_RM')">PIS_RM (18)</button>
+        <button class="filter-btn" onclick="filterCOOGroup(this,'RTU_RM')">RTU_RM (21)</button>
+      </div>
+
+      <div class="table-wrap">
+        <table id="cooTable">
+          <thead>
+            <tr>
+              <th>物料号</th>
+              <th>Portfolio</th>
+              <th>物料描述</th>
+              <th>进/国内</th>
+              <th>供应商</th>
+              <th>COO</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- CCM_Bulk -->
+            <tr data-group="CCM_Bulk"><td>24326C-50KG</td><td><span class="tag tag-blue">CCM_Bulk</span></td><td>EX-CELL(TM) 302 W/O PR 50kg</td><td>Import</td><td>Lenexa</td><td><span class="coo-badge coo-US">US</span></td></tr>
+            <tr data-group="CCM_Bulk"><td>24381C-25KG</td><td><span class="tag tag-blue">CCM_Bulk</span></td><td>EX-CELL(R) INSECT CELL MED 25KG</td><td>Import</td><td>Lenexa</td><td><span class="coo-badge coo-US">US</span></td></tr>
+            <tr data-group="CCM_Bulk"><td>1037519060</td><td><span class="tag tag-blue">CCM_Bulk</span></td><td>MD503 60kg</td><td>Import</td><td>Darmstadt</td><td><span class="coo-badge coo-DE">DE</span></td></tr>
+            <tr data-group="CCM_Bulk"><td>24804C-60KG</td><td><span class="tag tag-blue">CCM_Bulk</span></td><td>WMD600 60kg</td><td>Import</td><td>Irvine</td><td><span class="coo-badge coo-GB">GB</span></td></tr>
+            <tr data-group="CCM_Bulk"><td>1018839060-BCN</td><td><span class="tag tag-blue">CCM_Bulk</span></td><td>Cellvento® Feed-200 60 KG</td><td>Import</td><td>Darmstadt</td><td><span class="coo-badge coo-DE">DE</span></td></tr>
+            <tr data-group="CCM_Bulk"><td>1037950100-BCN</td><td><span class="tag tag-blue">CCM_Bulk</span></td><td>Cellvento® 4CHO COMP 2,37 KG BULK</td><td>Import</td><td>Darmstadt</td><td><span class="coo-badge coo-DE">DE</span></td></tr>
+            <tr data-group="CCM_Bulk"><td>1037969060-BCN</td><td><span class="tag tag-blue">CCM_Bulk</span></td><td>Cellvento® 4Feed COMP 60 KG</td><td>Import</td><td>Darmstadt</td><td><span class="coo-badge coo-DE">DE</span></td></tr>
+            <tr data-group="CCM_Bulk"><td>1038400100-BCN</td><td><span class="tag tag-blue">CCM_Bulk</span></td><td>Cellvento® 4CHO-X COMP 2,62 KG BULK</td><td>Import</td><td>Darmstadt</td><td><span class="coo-badge coo-DE">DE</span></td></tr>
+            <tr data-group="CCM_Bulk"><td>1037479060</td><td><span class="tag tag-blue">CCM_Bulk</span></td><td>MD505 60kg</td><td>Import</td><td>Darmstadt</td><td><span class="coo-badge coo-DE">DE</span></td></tr>
+            <tr data-group="CCM_Bulk"><td>24803C-60KG</td><td><span class="tag tag-blue">CCM_Bulk</span></td><td>MEM Cell Culture Media MD611</td><td>Import</td><td>Irvine</td><td><span class="coo-badge coo-GB">GB</span></td></tr>
+            <tr data-group="CCM_Bulk"><td>24801C-60KG</td><td><span class="tag tag-blue">CCM_Bulk</span></td><td>MD920 60kg</td><td>Import</td><td>Irvine</td><td><span class="coo-badge coo-GB">GB</span></td></tr>
+            <tr data-group="CCM_Bulk"><td>24802C-60KG</td><td><span class="tag tag-blue">CCM_Bulk</span></td><td>WMD611 60kg</td><td>Import</td><td>Irvine</td><td><span class="coo-badge coo-GB">GB</span></td></tr>
+            <tr data-group="CCM_Bulk"><td>24365C-50KG</td><td><span class="tag tag-blue">CCM_Bulk</span></td><td>EX-CELL (TM) CHO CD FUSION POWDER</td><td>Import</td><td>Irvine</td><td><span class="coo-badge coo-GB">GB</span></td></tr>
+            <tr data-group="CCM_Bulk"><td>24366C-25KG</td><td><span class="tag tag-blue">CCM_Bulk</span></td><td>EX-CELL(R) ADVANCED(TM) CHO-FED BATCH</td><td>Import</td><td>Irvine</td><td><span class="coo-badge coo-GB">GB</span></td></tr>
+            <tr data-group="CCM_Bulk"><td>24367C-25KG</td><td><span class="tag tag-blue">CCM_Bulk</span></td><td>EX-CELL(R) Adv CHO Feed 1 (with glucose)</td><td>Import</td><td>Irvine</td><td><span class="coo-badge coo-GB">GB</span></td></tr>
+            <tr data-group="CCM_Bulk"><td>24368C-25KG</td><td><span class="tag tag-blue">CCM_Bulk</span></td><td>EX-CELL(R) Adv CHO Feed 1 (w/o glucose)</td><td>Import</td><td>Irvine</td><td><span class="coo-badge coo-GB">GB</span></td></tr>
+            <tr data-group="CCM_Bulk"><td>24370C-5L-BCN</td><td><span class="tag tag-blue">CCM_Bulk</span></td><td>EX-CELL® Adv HD Perfusion BULK</td><td>Import</td><td>Irvine</td><td><span class="coo-badge coo-GB">GB</span></td></tr>
+            <tr data-group="CCM_Bulk"><td>24370C-25KG</td><td><span class="tag tag-blue">CCM_Bulk</span></td><td>EX-CELL ADVANCED HD PERFUSION</td><td>Import</td><td>Irvine</td><td><span class="coo-badge coo-GB">GB</span></td></tr>
+            <tr data-group="CCM_Bulk"><td>24420C-50K</td><td><span class="tag tag-blue">CCM_Bulk</span></td><td>EX-CELL(TM) 420 w/L-glut 50kg</td><td>Import</td><td>Lenexa</td><td><span class="coo-badge coo-US">US</span></td></tr>
+            <tr data-group="CCM_Bulk"><td>24571C-25KG</td><td><span class="tag tag-blue">CCM_Bulk</span></td><td>EX-CELL(TM) 293 25kg</td><td>Import</td><td>Lenexa</td><td><span class="coo-badge coo-US">US</span></td></tr>
+            <tr data-group="CCM_Bulk"><td>56499-25KG6428-BCN</td><td><span class="tag tag-blue">CCM_Bulk</span></td><td>DME HG MODIFIED 25KG Bulk</td><td>Import</td><td>Lenexa</td><td><span class="coo-badge coo-US">US</span></td></tr>
+            <!-- PIS_RM -->
+            <tr data-group="PIS_RM"><td>5762150000</td><td><span class="tag tag-green">PIS_RM</span></td><td>SODIUM HYDROXIDE 49%-51% Bulk 氢氧化钠</td><td>Domestic</td><td>China</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="PIS_RM"><td>5762000000</td><td><span class="tag tag-green">PIS_RM</span></td><td>ACETIC ACID Bulk 醋酸</td><td>Domestic</td><td>China</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="PIS_RM"><td>5892520001</td><td><span class="tag tag-green">PIS_RM</span></td><td>SULFURIC ACID 98% 硫酸98%</td><td>Domestic</td><td>China</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="PIS_RM"><td>5762100000</td><td><span class="tag tag-green">PIS_RM</span></td><td>HYDROCHLORIC ACID 36% Bulk 盐酸36%</td><td>Domestic</td><td>China</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="PIS_RM"><td>5762020000</td><td><span class="tag tag-green">PIS_RM</span></td><td>CHLORINE GAS Bulk 氯气</td><td>Domestic</td><td>China</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="PIS_RM"><td>5762130000</td><td><span class="tag tag-green">PIS_RM</span></td><td>ZINC OXIDE Bulk 氧化锌</td><td>Import</td><td>Netherland</td><td><span class="coo-badge coo-NL">NL</span></td></tr>
+            <tr data-group="PIS_RM"><td>5762120000</td><td><span class="tag tag-green">PIS_RM</span></td><td>IRON FLAKE 铁片</td><td>Import</td><td>Japan</td><td><span class="coo-badge coo-JP">JP</span></td></tr>
+            <tr data-group="PIS_RM"><td>5762050000</td><td><span class="tag tag-green">PIS_RM</span></td><td>ZINC OXIDE CRUDE 氧化锌</td><td>Import</td><td>Netherland</td><td><span class="coo-badge coo-NL">NL</span></td></tr>
+            <tr data-group="PIS_RM"><td>5762010000</td><td><span class="tag tag-green">PIS_RM</span></td><td>CHARCOAL ACTIVATED POWDER EXTRA PURE 活性炭</td><td>Import</td><td>France</td><td><span class="coo-badge coo-FR">FR</span></td></tr>
+            <tr data-group="PIS_RM"><td>5762080000</td><td><span class="tag tag-green">PIS_RM</span></td><td>SULFURIC ACID 98% Bulk 硫酸98%散装</td><td>Domestic</td><td>China</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="PIS_RM"><td>5762040000</td><td><span class="tag tag-green">PIS_RM</span></td><td>HYDROGEN PEROXIDE 30% Bulk 过氧化氢30%</td><td>Domestic</td><td>China</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="PIS_RM"><td>5762180000</td><td><span class="tag tag-green">PIS_RM</span></td><td>SODIUM SULFATE 硫酸钠</td><td>Domestic</td><td>China</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="PIS_RM"><td>5762030000</td><td><span class="tag tag-green">PIS_RM</span></td><td>SODIUM CARBONATE Bulk 碳酸钠</td><td>Domestic</td><td>China</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="PIS_RM"><td>5762070000</td><td><span class="tag tag-green">PIS_RM</span></td><td>ALUMINIUM GRAN. 99.99% Bulk 铝</td><td>Domestic</td><td>China</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="PIS_RM"><td>5762090000</td><td><span class="tag tag-green">PIS_RM</span></td><td>AMMONIA SULFATE TECHN Bulk 硫酸铵</td><td>Domestic</td><td>China</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="PIS_RM"><td>5762160000</td><td><span class="tag tag-green">PIS_RM</span></td><td>AMMONIA SOLUTION 28% Bulk 铵溶液</td><td>Domestic</td><td>China</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="PIS_RM"><td>5762060000</td><td><span class="tag tag-green">PIS_RM</span></td><td>Phosphoric acid 磷酸</td><td>Domestic</td><td>China</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="PIS_RM"><td>5762170000</td><td><span class="tag tag-green">PIS_RM</span></td><td>CITRIC ACID Bulk 柠檬酸</td><td>Domestic</td><td>China</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <!-- RTU_RM -->
+            <tr data-group="RTU_RM"><td>1024363600</td><td><span class="tag tag-purple">RTU_RM</span></td><td>TSA base for heipha</td><td>Import</td><td>Merck KGaA</td><td><span class="coo-badge coo-DE">DE</span></td></tr>
+            <tr data-group="RTU_RM"><td>5102500000</td><td><span class="tag tag-purple">RTU_RM</span></td><td>Meat peptone tryptic digest</td><td>Import</td><td>Biotecnica Interncional, SA, de CV</td><td><span class="coo-badge coo-MX">MX</span></td></tr>
+            <tr data-group="RTU_RM"><td>5100080000</td><td><span class="tag tag-purple">RTU_RM</span></td><td>Casein Peptone trypt</td><td>Import</td><td>Biotecnica Interncional, SA, de CV</td><td><span class="coo-badge coo-MX">MX</span></td></tr>
+            <tr data-group="RTU_RM"><td>5100380000</td><td><span class="tag tag-purple">RTU_RM</span></td><td>Tween 80 for synthesis</td><td>Import</td><td>SERVA Electrophoresis GmbH</td><td><span class="coo-badge coo-DE">DE</span></td></tr>
+            <tr data-group="RTU_RM"><td>5100020000</td><td><span class="tag tag-purple">RTU_RM</span></td><td>Bacteriological Agar</td><td>Import</td><td>Hispanagar, S.A.</td><td><span class="coo-badge coo-ES">ES</span></td></tr>
+            <tr data-group="RTU_RM"><td>5108160000</td><td><span class="tag tag-purple">RTU_RM</span></td><td>Agar Agar SG/SX/HSA</td><td>Import</td><td>INDUSTRIAS ROKO, S.A.</td><td><span class="coo-badge coo-ES">ES</span></td></tr>
+            <tr data-group="RTU_RM"><td>5100160000</td><td><span class="tag tag-purple">RTU_RM</span></td><td>Yeast extract Biospringer</td><td>Import</td><td>Millipore SAS</td><td><span class="coo-badge coo-FR">FR</span></td></tr>
+            <tr data-group="RTU_RM"><td>5100210000</td><td><span class="tag tag-purple">RTU_RM</span></td><td>Soy lecithin</td><td>Import</td><td>Carl Roth GmbH &amp; Co. KG</td><td><span class="coo-badge coo-DE">DE</span></td></tr>
+            <tr data-group="RTU_RM"><td>1065132222</td><td><span class="tag tag-purple">RTU_RM</span></td><td>SODIUM THIOSULFATE PENTAHYDRATE PURE</td><td>Import</td><td>Merck KGaA</td><td><span class="coo-badge coo-DE">DE</span></td></tr>
+            <tr data-group="RTU_RM"><td>5100060000</td><td><span class="tag tag-purple">RTU_RM</span></td><td>Sodium pyruvate for DCM Production</td><td>Import</td><td>SERVA Electrophoresis GmbH</td><td><span class="coo-badge coo-DE">DE</span></td></tr>
+            <tr data-group="RTU_RM"><td>5100130000</td><td><span class="tag tag-purple">RTU_RM</span></td><td>D(+)-Glucose monohydrate for biochemistry</td><td>Import</td><td>北京西美杰科技有限公司</td><td><span class="coo-badge coo-DE">DE</span></td></tr>
+            <tr data-group="RTU_RM"><td>5100170000</td><td><span class="tag tag-purple">RTU_RM</span></td><td>L-Histidine suitable for use as excipient</td><td>Import</td><td>SERVA Electrophoresis GmbH</td><td><span class="coo-badge coo-DE">DE</span></td></tr>
+            <tr data-group="RTU_RM"><td>5103800000</td><td><span class="tag tag-purple">RTU_RM</span></td><td>2-Morpholinoethanesulfonic acid monohydrate</td><td>Import</td><td>SERVA Electrophoresis GmbH</td><td><span class="coo-badge coo-DE">DE</span></td></tr>
+            <tr data-group="RTU_RM"><td>4806489025-CN</td><td><span class="tag tag-purple">RTU_RM</span></td><td>SODIUM HYDROXIDE SOLUTION 10 MOL/L</td><td>Import</td><td>Merck KGaA</td><td><span class="coo-badge coo-DE">DE</span></td></tr>
+            <tr data-group="RTU_RM"><td>1003122500-CN</td><td><span class="tag tag-purple">RTU_RM</span></td><td>HYDROCHLORIC ACID 25% EXTRA PURE PH HELV</td><td>Import</td><td>Merck Chemicals (Shanghai) Co., Ltd.</td><td><span class="coo-badge coo-DE">DE</span></td></tr>
+            <tr data-group="RTU_RM"><td>PF13241-CN</td><td><span class="tag tag-purple">RTU_RM</span></td><td>HOROLITH LIQUIDE</td><td>Import</td><td>ECO LAB</td><td><span class="coo-badge coo-FR">FR</span></td></tr>
+            <tr data-group="RTU_RM"><td>1081915000</td><td><span class="tag tag-purple">RTU_RM</span></td><td>FLUID THIOGLYCOLLATE MEDIUM</td><td>Import</td><td>Merck KGaA</td><td><span class="coo-badge coo-DE">DE</span></td></tr>
+            <tr data-group="RTU_RM"><td>1054595000</td><td><span class="tag tag-purple">RTU_RM</span></td><td>TRYPTIC SOY BROTH</td><td>Import</td><td>Merck KGaA</td><td><span class="coo-badge coo-DE">DE</span></td></tr>
+            <tr data-group="RTU_RM"><td>8170611000</td><td><span class="tag tag-purple">RTU_RM</span></td><td>POLYSORBATE 80</td><td>Import</td><td>Merck KGaA</td><td><span class="coo-badge coo-DE">DE</span></td></tr>
+            <tr data-group="RTU_RM"><td>1072242500</td><td><span class="tag tag-purple">RTU_RM</span></td><td>PEPTONE FROM MEAT</td><td>Import</td><td>Merck KGaA</td><td><span class="coo-badge coo-DE">DE</span></td></tr>
+            <tr data-group="RTU_RM"><td>475898-1KG</td><td><span class="tag tag-purple">RTU_RM</span></td><td>MOPS</td><td>Import</td><td>Merck Chemicals (Shanghai) Co., Ltd.</td><td><span class="coo-badge coo-US">US</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p id="cooCount" style="font-size:.8rem;color:var(--text-muted);margin-top:8px;">显示 60 / 60 条</p>
+    </div>
+  </section>
+
+  <!-- ▌模块 11 ▌-->
+  <section class="module" id="sec11">
+    <div class="module-header">
+      <div class="index">11</div>
+      <h2>PIS 进口包材 — 需要 COA 的包材</h2>
+    </div>
+    <div class="module-body">
+      <div class="note">
+        <strong>判断规则：</strong>MDA 物料只有 <strong>Primary package</strong> 且 <strong>API = API</strong> 的才有 COA。以下 <strong class="hi">9 条</strong>包材收货时须提供 COA。
+      </div>
+
+      <div class="coo-toolbar" style="margin-top:12px;">
+        <input type="text" id="pisSearch" placeholder="搜索物料号 / 描述 / 供应商..." oninput="filterPIS()">
+      </div>
+
+      <div class="table-wrap">
+        <table id="pisTable">
+          <thead>
+            <tr>
+              <th>物料号（南通）</th>
+              <th>物料描述</th>
+              <th>供应商</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>5763070001</td><td>Double PE Bag (SA PE 450X700+130MM)</td><td>B+K</td></tr>
+            <tr><td>5763080001</td><td>Double PE Bag (SA PE 490X1000+190 DPES)</td><td>B+K</td></tr>
+            <tr><td>5807340001</td><td>Double PE bag LDPE (SA PE 450X1000+130 DPES)</td><td>B+K</td></tr>
+            <tr><td>5763060001</td><td>Screw cap S85 (SKAP PP S85 GR KOD OS)</td><td>Riegler</td></tr>
+            <tr><td>5663330001</td><td>Screw cap S60 (SKAP PP S60 GR KOD OS)</td><td>Riegler</td></tr>
+            <tr><td>5763000001</td><td>PE bottle 1250 ml (FL PE 1,25L S60)</td><td>Sauer</td></tr>
+            <tr><td>5763010001</td><td>PE bottle 1800 ml (FL PE 1,8L S85)</td><td>Sauer</td></tr>
+            <tr><td>5763090001</td><td>PE bag (SA PE 900X1175 MM)</td><td>Strubl</td></tr>
+            <tr><td>5667040001</td><td>Multilayer bag OPA/OPA/PE (FO OPA/OPA/PE 700M)</td><td>Tesseraux</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p id="pisCount" style="font-size:.8rem;color:var(--text-muted);margin-top:8px;">显示 9 / 9 条</p>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  // 密码锁
+  (function(){
+    if(sessionStorage.getItem('pkg_auth')==='123'){
+      document.getElementById('pw-gate').style.display='none';
+    }
+  })();
+  function checkPW(){
+    const inp=document.getElementById('pw-input');
+    if(inp.value==='123'){
+      sessionStorage.setItem('pkg_auth','123');
+      const gate=document.getElementById('pw-gate');
+      gate.style.transition='opacity .3s';
+      gate.style.opacity='0';
+      setTimeout(()=>gate.style.display='none',300);
+    } else {
+      inp.classList.add('pw-err');
+      document.getElementById('pw-errmsg').textContent='密码错误，请重试';
+      setTimeout(()=>inp.classList.remove('pw-err'),400);
+      inp.value=''; inp.focus();
+    }
+  }
+
+  // 导航高亮（Intersection Observer）
+  const sections = document.querySelectorAll('.module');
+  const navLinks = document.querySelectorAll('nav a');
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(a => a.classList.remove('active'));
+        const link = document.querySelector(`nav a[href="#${e.target.id}"]`);
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-56px 0px -60% 0px', threshold: 0 });
+
+  sections.forEach(s => observer.observe(s));
+
+  // PIS COA 表格搜索
+  function filterPIS() {
+    const kw = document.getElementById('pisSearch').value.toLowerCase();
+    const rows = document.querySelectorAll('#pisTable tbody tr');
+    let visible = 0;
+    rows.forEach(r => {
+      const match = !kw || r.textContent.toLowerCase().includes(kw);
+      if (match) { r.classList.remove('hidden-row'); visible++; }
+      else r.classList.add('hidden-row');
+    });
+    document.getElementById('pisCount').textContent = '显示 ' + visible + ' / 9 条';
+  }
+
+  // COO 表格筛选
+  let cooActiveGroup = 'all';
+  function filterCOO() {
+    const kw = document.getElementById('cooSearch').value.toLowerCase();
+    const rows = document.querySelectorAll('#cooTable tbody tr');
+    let visible = 0;
+    rows.forEach(r => {
+      const matchGroup = cooActiveGroup === 'all' || r.dataset.group === cooActiveGroup;
+      const matchKw = !kw || r.textContent.toLowerCase().includes(kw);
+      if (matchGroup && matchKw) { r.classList.remove('hidden-row'); visible++; }
+      else r.classList.add('hidden-row');
+    });
+    document.getElementById('cooCount').textContent = '显示 ' + visible + ' / 60 条';
+  }
+  function filterCOOGroup(btn, group) {
+    cooActiveGroup = group;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    filterCOO();
+  }
+
+  // 移动端导航开关
+  function toggleNav() {
+    document.getElementById('nav').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('show');
+  }
+  function closeNav() {
+    document.getElementById('nav').classList.remove('open');
+    document.getElementById('overlay').classList.remove('show');
+  }
+</script>
+
+</body>
+</html>
