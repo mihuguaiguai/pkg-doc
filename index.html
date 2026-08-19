@@ -312,7 +312,7 @@
 <header>
   <button class="menu-btn" onclick="toggleNav()" aria-label="菜单">☰</button>
   <h1>特殊来料登记包材</h1>
-  <span class="badge">11 个模块</span>
+  <span class="badge">12 个模块</span>
 </header>
 
 <!-- 遮罩（移动端） -->
@@ -332,6 +332,7 @@
   <a href="#sec9" class="warning-link" onclick="closeNav()"><span class="num">9</span>来料收货表（易制毒易制爆）</a>
   <a href="#sec10" onclick="closeNav()"><span class="num">10</span>需要填 COO 的原料</a>
   <a href="#sec11" onclick="closeNav()"><span class="num">11</span>PIS 进口包材 COA 要求</a>
+  <a href="#sec12" onclick="closeNav()"><span class="num">12</span>公盘路径</a>
 </nav>
 
 <!-- 内容 -->
@@ -760,6 +761,52 @@
         </table>
       </div>
       <p id="pisCount" style="font-size:.8rem;color:var(--text-muted);margin-top:8px;">显示 9 / 9 条</p>
+    </div>
+  </section>
+
+  <section class="module" id="sec12">
+    <div class="module-header">
+      <div class="index">12</div>
+      <h2>公盘路径</h2>
+    </div>
+    <div class="module-body">
+      <ul>
+        <li>
+          <strong>PIS</strong>
+          <ul class="sub-list">
+            <li>来料检查表路径：<code>17 - Shared\05 - Quality\07_Checklist for Incoming Material\PIS COA+来料检查表</code></li>
+            <li>提交 COA 和来料表</li>
+            <li>填写 <span class="hi">Smart Material Tracker - Power Apps</span> warehouse 收货部分，提交 COA 附件</li>
+          </ul>
+        </li>
+        <li>
+          <strong>RTU / CCM</strong>
+          <ul class="sub-list">
+            <li>提交 K2，<span class="hi-red">不提交来料表</span></li>
+          </ul>
+        </li>
+        <li>
+          <strong>Pinmill</strong>
+          <ul class="sub-list">
+            <li>来料检查表路径：<code>17 - Shared\06 - Supply Chain\09-Pin Mill\Pin Mill vendor CoA\来料收货检查表</code></li>
+            <li>提交来料表，填写 K2</li>
+          </ul>
+        </li>
+        <li>
+          <strong>IA</strong>
+          <ul class="sub-list">
+            <li>填写 <span class="hi">Nantong IA RM PO Tracking - Power Apps</span></li>
+            <li>并推送 App 中的 Mail</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Solvent</strong>
+          <ul class="sub-list">
+            <li>来料检查表路径：<code>17 - Shared\05 - Quality\07_Checklist for Incoming Material\Solvent 来料检查表</code>，提交来料表</li>
+            <li>COA 路径：<code>OneDrive\Shortcuts\Solvent Production Department-Solvent Cross Function Communication - Tank Farm Material COA</code>，提交 COA</li>
+          </ul>
+        </li>
+      </ul>
     </div>
   </section>
 
