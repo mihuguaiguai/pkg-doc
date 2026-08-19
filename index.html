@@ -239,6 +239,46 @@
   .coo-ES { background: #fef3c7; color: #92400e; }
   tr.hidden-row { display: none; }
 
+  /* ── 全局搜索 ── */
+  .search-wrap {
+    margin-left: auto;
+    display: flex; align-items: center; gap: 10px;
+  }
+  #globalSearch {
+    background: rgba(255,255,255,.15);
+    border: 1.5px solid rgba(255,255,255,.3);
+    border-radius: 20px;
+    padding: 5px 14px 5px 34px;
+    color: #fff; font-size: .855rem; outline: none;
+    width: 180px; transition: width .25s, background .2s;
+    font-family: inherit;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' fill='rgba(255,255,255,.55)' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.656a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: 10px center;
+  }
+  #globalSearch::placeholder { color: rgba(255,255,255,.48); }
+  #globalSearch:focus {
+    background-color: rgba(255,255,255,.22);
+    border-color: rgba(255,255,255,.7);
+    width: 240px;
+  }
+  #searchCount {
+    font-size: .75rem; color: rgba(255,255,255,.65);
+    white-space: nowrap;
+  }
+  mark.search-hl {
+    background: #fde047; color: #1a1a2e;
+    border-radius: 2px; padding: 0 2px; font-style: normal;
+  }
+  .module.search-hidden { display: none; }
+  nav a.search-hidden { display: none; }
+  .search-no-result {
+    text-align: center; padding: 48px 0;
+    color: var(--text-muted); font-size: .95rem;
+    display: none;
+  }
+  .search-no-result.show { display: block; }
+
   /* ── 密码锁 ── */
   #pw-gate {
     position: fixed; inset: 0; z-index: 9999;
@@ -313,6 +353,13 @@
   <button class="menu-btn" onclick="toggleNav()" aria-label="菜单">☰</button>
   <h1>特殊来料登记包材</h1>
   <span class="badge">12 个模块</span>
+  <div class="search-wrap">
+    <input id="globalSearch" type="search" placeholder="搜索内容…"
+           oninput="doGlobalSearch(this.value)"
+           onsearch="doGlobalSearch(this.value)"
+           autocomplete="off" spellcheck="false">
+    <span id="searchCount"></span>
+  </div>
 </header>
 
 <!-- 遮罩（移动端） -->
@@ -811,6 +858,7 @@
   </section>
 
 </main>
+<div class="search-no-result" id="noResult">未找到匹配内容，请尝试其他关键词</div>
 
 <script>
   // 密码锁
@@ -883,6 +931,76 @@
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     filterCOO();
+  }
+
+  // 全局搜索
+  function doGlobalSearch(kw) {
+    const modules = document.querySelectorAll('.module');
+    const q = kw.trim().toLowerCase();
+    const countEl = document.getElementById('searchCount');
+    const noResult = document.getElementById('noResult');
+
+    // 清除旧高亮
+    document.querySelectorAll('mark.search-hl').forEach(mark => {
+      const p = mark.parentNode;
+      while (mark.firstChild) p.insertBefore(mark.firstChild, mark);
+      p.removeChild(mark);
+      p.normalize();
+    });
+
+    if (!q) {
+      modules.forEach(m => m.classList.remove('search-hidden'));
+      document.querySelectorAll('nav a').forEach(a => a.classList.remove('search-hidden'));
+      countEl.textContent = '';
+      noResult.classList.remove('show');
+      return;
+    }
+
+    let hit = 0;
+    modules.forEach(m => {
+      if (m.textContent.toLowerCase().includes(q)) {
+        m.classList.remove('search-hidden');
+        _hlText(m, q);
+        hit++;
+        const lnk = document.querySelector(`nav a[href="#${m.id}"]`);
+        if (lnk) lnk.classList.remove('search-hidden');
+      } else {
+        m.classList.add('search-hidden');
+        const lnk = document.querySelector(`nav a[href="#${m.id}"]`);
+        if (lnk) lnk.classList.add('search-hidden');
+      }
+    });
+
+    countEl.textContent = hit > 0 ? `找到 ${hit} 个章节` : '';
+    noResult.classList.toggle('show', hit === 0);
+  }
+
+  function _hlText(container, q) {
+    const SKIP = new Set(['SCRIPT','STYLE','MARK','INPUT','TEXTAREA']);
+    const walker = document.createTreeWalker(
+      container, NodeFilter.SHOW_TEXT,
+      { acceptNode: n => SKIP.has(n.parentNode.tagName) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT }
+    );
+    const nodes = [];
+    let n;
+    while ((n = walker.nextNode())) nodes.push(n);
+    nodes.forEach(tn => {
+      const txt = tn.textContent;
+      const low = txt.toLowerCase();
+      if (!low.includes(q)) return;
+      const frag = document.createDocumentFragment();
+      let last = 0, pos;
+      while ((pos = low.indexOf(q, last)) !== -1) {
+        if (pos > last) frag.appendChild(document.createTextNode(txt.slice(last, pos)));
+        const mk = document.createElement('mark');
+        mk.className = 'search-hl';
+        mk.textContent = txt.slice(pos, pos + q.length);
+        frag.appendChild(mk);
+        last = pos + q.length;
+      }
+      if (last < txt.length) frag.appendChild(document.createTextNode(txt.slice(last)));
+      tn.parentNode.replaceChild(frag, tn);
+    });
   }
 
   // 移动端导航开关
