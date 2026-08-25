@@ -237,6 +237,8 @@
   .coo-JP { background: #fee2e2; color: #991b1b; }
   .coo-MX { background: #d1fae5; color: #065f46; }
   .coo-ES { background: #fef3c7; color: #92400e; }
+  .coo-MY { background: #fef9c3; color: #854d0e; }
+  .tag-teal { background: #ccfbf1; color: #0f766e; }
   tr.hidden-row { display: none; }
 
   /* ── 全局搜索 ── */
@@ -675,16 +677,17 @@
     </div>
     <div class="module-body">
       <div class="note" style="margin-bottom:14px;">
-        以下原料收货时 PIS 系统须填写 <strong>COO（Country of Origin，原产地）</strong>。共 <strong>60</strong> 条记录，数据更新日期：<strong>2025-04-22</strong>。
+        以下原料收货时 PIS 系统须填写 <strong>COO（Country of Origin，原产地）</strong>。共 <strong>89</strong> 条记录。CCM_Bulk / PIS_RM / RTU_RM 数据截至 <strong>2025-04-22</strong>；Solvent_RM 数据截至 <strong>2026-03-31</strong>。
       </div>
 
       <!-- 工具栏 -->
       <div class="coo-toolbar">
         <input type="text" id="cooSearch" placeholder="搜索物料号 / 描述 / 供应商..." oninput="filterCOO()">
-        <button class="filter-btn active" onclick="filterCOOGroup(this,'all')">全部 (60)</button>
+        <button class="filter-btn active" onclick="filterCOOGroup(this,'all')">全部 (89)</button>
         <button class="filter-btn" onclick="filterCOOGroup(this,'CCM_Bulk')">CCM_Bulk (21)</button>
         <button class="filter-btn" onclick="filterCOOGroup(this,'PIS_RM')">PIS_RM (18)</button>
         <button class="filter-btn" onclick="filterCOOGroup(this,'RTU_RM')">RTU_RM (21)</button>
+        <button class="filter-btn" onclick="filterCOOGroup(this,'Solvent_RM')">Solvent_RM (29)</button>
       </div>
 
       <div class="table-wrap">
@@ -763,10 +766,40 @@
             <tr data-group="RTU_RM"><td>8170611000</td><td><span class="tag tag-purple">RTU_RM</span></td><td>POLYSORBATE 80</td><td>Import</td><td>Merck KGaA</td><td><span class="coo-badge coo-DE">DE</span></td></tr>
             <tr data-group="RTU_RM"><td>1072242500</td><td><span class="tag tag-purple">RTU_RM</span></td><td>PEPTONE FROM MEAT</td><td>Import</td><td>Merck KGaA</td><td><span class="coo-badge coo-DE">DE</span></td></tr>
             <tr data-group="RTU_RM"><td>475898-1KG</td><td><span class="tag tag-purple">RTU_RM</span></td><td>MOPS</td><td>Import</td><td>Merck Chemicals (Shanghai) Co., Ltd.</td><td><span class="coo-badge coo-US">US</span></td></tr>
+            <!-- Solvent_RM -->
+            <tr data-group="Solvent_RM"><td>6125860001</td><td><span class="tag tag-teal">Solvent_RM</span></td><td>乙腈</td><td>Domestic</td><td>南通立洋化学有限公司 / 潍坊中汇化工有限公司</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="Solvent_RM"><td>6125990001</td><td><span class="tag tag-teal">Solvent_RM</span></td><td>甲醇</td><td>Import</td><td>上海嘉荣贸易有限公司</td><td><span class="coo-badge coo-MY">MY</span></td></tr>
+            <tr data-group="Solvent_RM"><td>6125940001</td><td><span class="tag tag-teal">Solvent_RM</span></td><td>N,N-二甲基甲酰胺</td><td>Domestic</td><td>常州市联化对外贸易有限公司 / 常州市欣兆华化工有限公司</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="Solvent_RM"><td>6126030001</td><td><span class="tag tag-teal">Solvent_RM</span></td><td>二甲基亚砜</td><td>Domestic</td><td>常州市联化对外贸易有限公司 / 常州市欣兆华化工有限公司</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="Solvent_RM"><td>6262930001</td><td><span class="tag tag-teal">Solvent_RM</span></td><td>四氢呋喃（含稳定剂）</td><td>Domestic</td><td>常州市联化对外贸易有限公司 / 常州市欣兆华化工有限公司</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="Solvent_RM"><td>6125920001</td><td><span class="tag tag-teal">Solvent_RM</span></td><td>环己烷</td><td>Domestic</td><td>常州市联化对外贸易有限公司 / 常州市欣兆华化工有限公司</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="Solvent_RM"><td>6125970001</td><td><span class="tag tag-teal">Solvent_RM</span></td><td>1,2-二甲氧基乙烷</td><td>Domestic</td><td>常州市联化对外贸易有限公司 / 常州市欣兆华化工有限公司</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="Solvent_RM"><td>6126080001</td><td><span class="tag tag-teal">Solvent_RM</span></td><td>乙酸乙酯</td><td>Domestic</td><td>常州市联化对外贸易有限公司 / 常州市欣兆华化工有限公司</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="Solvent_RM"><td>6125930001</td><td><span class="tag tag-teal">Solvent_RM</span></td><td>N,N-二甲基乙酰胺</td><td>Domestic</td><td>常州市联化对外贸易有限公司 / 常州市欣兆华化工有限公司</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="Solvent_RM"><td>6125800001</td><td><span class="tag tag-teal">Solvent_RM</span></td><td>二丁醚</td><td>Domestic</td><td>常州市联化对外贸易有限公司 / 常州市欣兆华化工有限公司</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="Solvent_RM"><td>6125870001</td><td><span class="tag tag-teal">Solvent_RM</span></td><td>2-丙醇</td><td>Domestic</td><td>常州市联化对外贸易有限公司 / 常州市欣兆华化工有限公司</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="Solvent_RM"><td>6125900001</td><td><span class="tag tag-teal">Solvent_RM</span></td><td>1-丁醇</td><td>Domestic</td><td>常州市联化对外贸易有限公司 / 常州市欣兆华化工有限公司</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="Solvent_RM"><td>6126000001</td><td><span class="tag tag-teal">Solvent_RM</span></td><td>2-甲氧基乙醇</td><td>Domestic</td><td>常州市联化对外贸易有限公司 / 常州市欣兆华化工有限公司</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="Solvent_RM"><td>6125910001</td><td><span class="tag tag-teal">Solvent_RM</span></td><td>乙酸丁酯</td><td>Domestic</td><td>常州市联化对外贸易有限公司 / 常州市欣兆华化工有限公司</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="Solvent_RM"><td>6125980001</td><td><span class="tag tag-teal">Solvent_RM</span></td><td>正己烷</td><td>Domestic</td><td>常州市联化对外贸易有限公司 / 常州市欣兆华化工有限公司</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="Solvent_RM"><td>6125810001</td><td><span class="tag tag-teal">Solvent_RM</span></td><td>苯甲醚</td><td>Domestic</td><td>常州市联化对外贸易有限公司 / 常州市欣兆华化工有限公司</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="Solvent_RM"><td>6125950001</td><td><span class="tag tag-teal">Solvent_RM</span></td><td>1,4-二氧六环</td><td>Domestic</td><td>常州市联化对外贸易有限公司 / 常州市欣兆华化工有限公司</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="Solvent_RM"><td>6126040001</td><td><span class="tag tag-teal">Solvent_RM</span></td><td>辛烷</td><td>Domestic</td><td>常州市联化对外贸易有限公司 / 常州市欣兆华化工有限公司</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="Solvent_RM"><td>6125830001</td><td><span class="tag tag-teal">Solvent_RM</span></td><td>乙酸甲酯</td><td>Domestic</td><td>常州市联化对外贸易有限公司 / 常州市欣兆华化工有限公司</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="Solvent_RM"><td>6125840001</td><td><span class="tag tag-teal">Solvent_RM</span></td><td>十二烷</td><td>Domestic</td><td>常州市联化对外贸易有限公司 / 常州市欣兆华化工有限公司</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="Solvent_RM"><td>6126010001</td><td><span class="tag tag-teal">Solvent_RM</span></td><td>甲基环己烷</td><td>Domestic</td><td>常州市联化对外贸易有限公司 / 常州市欣兆华化工有限公司</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="Solvent_RM"><td>6125890001</td><td><span class="tag tag-teal">Solvent_RM</span></td><td>苯甲醇</td><td>Domestic</td><td>常州市联化对外贸易有限公司 / 常州市欣兆华化工有限公司</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="Solvent_RM"><td>6125850001</td><td><span class="tag tag-teal">Solvent_RM</span></td><td>叔丁基甲基醚</td><td>Domestic</td><td>常州市联化对外贸易有限公司 / 常州市欣兆华化工有限公司</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="Solvent_RM"><td>6126050001</td><td><span class="tag tag-teal">Solvent_RM</span></td><td>碳酸丙烯酯</td><td>Domestic</td><td>常州市联化对外贸易有限公司 / 常州市欣兆华化工有限公司</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="Solvent_RM"><td>6125960001</td><td><span class="tag tag-teal">Solvent_RM</span></td><td>乙二醇</td><td>Domestic</td><td>常州市联化对外贸易有限公司 / 常州市欣兆华化工有限公司</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="Solvent_RM"><td>6126020001</td><td><span class="tag tag-teal">Solvent_RM</span></td><td>1-甲基-2-吡咯烷酮</td><td>Domestic</td><td>常州市联化对外贸易有限公司 / 常州市欣兆华化工有限公司</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="Solvent_RM"><td>6126060001</td><td><span class="tag tag-teal">Solvent_RM</span></td><td>四氢呋喃（不含稳定剂）</td><td>Domestic</td><td>常州市联化对外贸易有限公司 / 常州市欣兆华化工有限公司</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="Solvent_RM"><td>6125880001</td><td><span class="tag tag-teal">Solvent_RM</span></td><td>乙醇</td><td>Domestic</td><td>常州市联化对外贸易有限公司 / 常州市欣兆华化工有限公司</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
+            <tr data-group="Solvent_RM"><td>6125820001</td><td><span class="tag tag-teal">Solvent_RM</span></td><td>2-甲基四氢呋喃</td><td>Domestic</td><td>常州市联化对外贸易有限公司 / 常州市欣兆华化工有限公司</td><td><span class="coo-badge coo-CN">CN</span></td></tr>
           </tbody>
         </table>
       </div>
-      <p id="cooCount" style="font-size:.8rem;color:var(--text-muted);margin-top:8px;">显示 60 / 60 条</p>
+      <p id="cooCount" style="font-size:.8rem;color:var(--text-muted);margin-top:8px;">显示 89 / 89 条</p>
     </div>
   </section>
 
@@ -924,7 +957,7 @@
       if (matchGroup && matchKw) { r.classList.remove('hidden-row'); visible++; }
       else r.classList.add('hidden-row');
     });
-    document.getElementById('cooCount').textContent = '显示 ' + visible + ' / 60 条';
+    document.getElementById('cooCount').textContent = '显示 ' + visible + ' / 89 条';
   }
   function filterCOOGroup(btn, group) {
     cooActiveGroup = group;
