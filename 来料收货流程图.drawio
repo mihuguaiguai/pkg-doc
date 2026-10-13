@@ -1,0 +1,116 @@
+<mxfile host="app.diagrams.net" modified="2025-01-01T00:00:00.000Z" agent="Claude" version="21.0.0">
+  <diagram id="incoming-material" name="来料收货流程">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="1">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="&lt;b&gt;来料收货检查流程 · Incoming Material Receiving Inspection&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=#FF6B6B;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontColor=#FFFFFF;fontSize=16;fontStyle=1;arcSize=4;" vertex="1" parent="1">
+          <mxGeometry x="10" y="10" width="1040" height="48" as="geometry" />
+        </mxCell>
+
+        <!-- Swim lane label: Normal -->
+        <mxCell id="lane1" value="正常路径" style="text;html=1;strokeColor=none;fillColor=#FF6B6B;align=center;verticalAlign=middle;fontColor=#FFFFFF;fontSize=10;fontStyle=1;rotation=-90;" vertex="1" parent="1">
+          <mxGeometry x="10" y="70" width="20" height="140" as="geometry" />
+        </mxCell>
+
+        <!-- Step 1: 文件一致性核对 -->
+        <mxCell id="s1" value="&lt;b&gt;Step 1&lt;/b&gt;&lt;br&gt;文件信息一致性核对&lt;br&gt;&lt;font color=&#39;#7f8c8d&#39; style=&#39;font-size:9px&#39;&gt;三单一致：送货单/实物标签/COA&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#F39C12;strokeWidth=2;fontSize=11;arcSize=10;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="38" y="78" width="140" height="74" as="geometry" />
+        </mxCell>
+
+        <!-- Step 2: 打印收货文件 -->
+        <mxCell id="s2" value="&lt;b&gt;Step 2&lt;/b&gt;&lt;br&gt;打印收货文件&lt;br&gt;&lt;font color=&#39;#7f8c8d&#39; style=&#39;font-size:9px&#39;&gt;SAP打印PO + WH003-F01&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#b2bec3;strokeWidth=2;fontSize=11;arcSize=10;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="198" y="78" width="140" height="74" as="geometry" />
+        </mxCell>
+
+        <!-- Step 3: PO状态确认 -->
+        <mxCell id="s3" value="&lt;b&gt;Step 3&lt;/b&gt;&lt;br&gt;PO 状态确认&lt;br&gt;&lt;font color=&#39;#7f8c8d&#39; style=&#39;font-size:9px&#39;&gt;SAP ME23N 查 LA 是否开放&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#F39C12;strokeWidth=2;fontSize=11;arcSize=10;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="358" y="78" width="140" height="74" as="geometry" />
+        </mxCell>
+
+        <!-- Parallel block container -->
+        <mxCell id="par" value="⟨ 并行检查 ⟩" style="swimlane;html=1;startSize=22;fillColor=#EBF5FB;strokeColor=#5DADE2;strokeWidth=2;dashed=1;dashPattern=6 4;fontColor=#2980B9;fontSize=10;fontStyle=1;arcSize=6;" vertex="1" parent="1">
+          <mxGeometry x="518" y="60" width="194" height="140" as="geometry" />
+        </mxCell>
+
+        <!-- P1: 特殊来料识别 -->
+        <mxCell id="p1" value="&lt;b&gt;Step 4&lt;/b&gt; · 特殊来料识别分类&lt;br&gt;&lt;font color=&#39;#7f8c8d&#39; style=&#39;font-size:9px&#39;&gt;特殊包材 / 危化品 / 特殊储存&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#3498DB;strokeWidth=1.5;fontSize=10;" vertex="1" parent="par">
+          <mxGeometry x="8" y="28" width="178" height="32" as="geometry" />
+        </mxCell>
+
+        <!-- P2: Pinmill -->
+        <mxCell id="p2" value="&lt;b&gt;Step 5&lt;/b&gt; · Pinmill 原料储存检查&lt;br&gt;&lt;font color=&#39;#7f8c8d&#39; style=&#39;font-size:9px&#39;&gt;Power Apps 查储存条件&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#3498DB;strokeWidth=1.5;fontSize=10;" vertex="1" parent="par">
+          <mxGeometry x="8" y="66" width="178" height="32" as="geometry" />
+        </mxCell>
+
+        <!-- P3: 标签审批 -->
+        <mxCell id="p3" value="物料标签审批查询&lt;br&gt;&lt;font color=&#39;#7f8c8d&#39; style=&#39;font-size:9px&#39;&gt;系统查询标签是否已审批&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#3498DB;strokeWidth=1.5;fontSize=10;" vertex="1" parent="par">
+          <mxGeometry x="8" y="104" width="178" height="32" as="geometry" />
+        </mxCell>
+
+        <!-- Decision diamond -->
+        <mxCell id="dec" value="&lt;b&gt;来料&lt;br&gt;判定&lt;/b&gt;" style="rhombus;whiteSpace=wrap;html=1;fillColor=#F8F0FF;strokeColor=#9B59B6;strokeWidth=2;fontSize=11;fontColor=#6c3483;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="732" y="80" width="120" height="72" as="geometry" />
+        </mxCell>
+
+        <!-- Normal outcome -->
+        <mxCell id="ok" value="&lt;b&gt;✓ 正常收货&lt;/b&gt;&lt;br&gt;SAP 入库上架&lt;br&gt;&lt;font color=&#39;#7f8c8d&#39; style=&#39;font-size:9px&#39;&gt;WH003-F01 记录归档&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F8F5;strokeColor=#27AE60;strokeWidth=2;fontSize=11;fontColor=#1e8449;arcSize=10;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="872" y="80" width="150" height="72" as="geometry" />
+        </mxCell>
+
+        <!-- Swim lane label: Exception -->
+        <mxCell id="lane2" value="异常处置" style="text;html=1;strokeColor=none;fillColor=#e74c3c;align=center;verticalAlign=middle;fontColor=#FFFFFF;fontSize=10;fontStyle=1;rotation=-90;" vertex="1" parent="1">
+          <mxGeometry x="10" y="250" width="20" height="140" as="geometry" />
+        </mxCell>
+
+        <!-- Exception step 1 -->
+        <mxCell id="e1" value="&lt;b&gt;①&lt;/b&gt;&lt;br&gt;暂停收货&lt;br&gt;&lt;font color=&#39;#7f8c8d&#39; style=&#39;font-size:9px&#39;&gt;停止卸货清点&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF5F5;strokeColor=#e74c3c;strokeWidth=1.5;fontSize=11;fontColor=#c0392b;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="38" y="258" width="118" height="66" as="geometry" />
+        </mxCell>
+
+        <!-- Exception step 2 -->
+        <mxCell id="e2" value="&lt;b&gt;②&lt;/b&gt;&lt;br&gt;隔离标识&lt;br&gt;&lt;font color=&#39;#7f8c8d&#39; style=&#39;font-size:9px&#39;&gt;"待判定"区+状态标识&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF5F5;strokeColor=#e74c3c;strokeWidth=1.5;fontSize=11;fontColor=#c0392b;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="168" y="258" width="118" height="66" as="geometry" />
+        </mxCell>
+
+        <!-- Exception step 3 -->
+        <mxCell id="e3" value="&lt;b&gt;③&lt;/b&gt;&lt;br&gt;通知与记录&lt;br&gt;&lt;font color=&#39;#7f8c8d&#39; style=&#39;font-size:9px&#39;&gt;WH003-F01 + QM083-F01&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF5F5;strokeColor=#e74c3c;strokeWidth=1.5;fontSize=11;fontColor=#c0392b;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="298" y="258" width="130" height="66" as="geometry" />
+        </mxCell>
+
+        <!-- Exception step 4 -->
+        <mxCell id="e4" value="&lt;b&gt;④&lt;/b&gt;&lt;br&gt;QA 评估&lt;br&gt;&lt;font color=&#39;#7f8c8d&#39; style=&#39;font-size:9px&#39;&gt;可启动偏差调查&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF5F5;strokeColor=#e74c3c;strokeWidth=1.5;fontSize=11;fontColor=#c0392b;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="440" y="258" width="118" height="66" as="geometry" />
+        </mxCell>
+
+        <!-- Exception step 5 -->
+        <mxCell id="e5" value="&lt;b&gt;⑤&lt;/b&gt;&lt;br&gt;处置执行&lt;br&gt;&lt;font color=&#39;#7f8c8d&#39; style=&#39;font-size:9px&#39;&gt;退货/换货/让步/报废&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF5F5;strokeColor=#e74c3c;strokeWidth=1.5;fontSize=11;fontColor=#c0392b;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="570" y="258" width="128" height="66" as="geometry" />
+        </mxCell>
+
+        <!-- Exception step 6 -->
+        <mxCell id="e6" value="&lt;b&gt;⑥&lt;/b&gt;&lt;br&gt;归档关闭&lt;br&gt;&lt;font color=&#39;#7f8c8d&#39; style=&#39;font-size:9px&#39;&gt;补齐记录/通知采购整改&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F8F5;strokeColor=#27AE60;strokeWidth=1.5;fontSize=11;fontColor=#1e8449;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="710" y="258" width="130" height="66" as="geometry" />
+        </mxCell>
+
+        <!-- Main flow arrows -->
+        <mxCell id="a1" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="s1" target="s2" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="a2" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="s2" target="s3" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="a3" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="s3" target="par" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="a4" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="par" target="dec" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="a5" value="合格" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#27AE60;fontColor=#27AE60;fontStyle=1;exitX=1;exitY=0.5;" edge="1" source="dec" target="ok" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="a6" value="异常" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#e74c3c;fontColor=#e74c3c;fontStyle=1;dashed=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="dec" target="e1" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Exception arrows -->
+        <mxCell id="ae1" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#e74c3c;" edge="1" source="e1" target="e2" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ae2" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#e74c3c;" edge="1" source="e2" target="e3" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ae3" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#e74c3c;" edge="1" source="e3" target="e4" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ae4" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#e74c3c;" edge="1" source="e4" target="e5" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ae5" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#27AE60;" edge="1" source="e5" target="e6" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
