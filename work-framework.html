@@ -928,6 +928,13 @@ footer {
 </style>
 </head>
 <body>
+<style>#pw-gate{position:fixed;inset:0;background:#fff;z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;font-family:sans-serif}#pw-gate input{padding:10px 14px;font-size:16px;border:1px solid #888;border-radius:6px}#pw-gate button{padding:10px 24px;font-size:16px;border:0;border-radius:6px;background:#0a5;color:#fff;cursor:pointer}</style>
+<div id="pw-gate"><div style="font-size:18px">请输入密码</div><input id="pw-in" type="password" autofocus onkeydown="if(event.key==='Enter')pwGo()"><button onclick="pwGo()">进入</button><div id="pw-err" style="color:#c00"></div></div>
+<script>
+function pwGo(){if(document.getElementById('pw-in').value==='123'){sessionStorage.setItem('wf_auth','123');document.getElementById('pw-gate').remove()}else{document.getElementById('pw-err').textContent='密码错误'}}
+if(sessionStorage.getItem('wf_auth')==='123'){document.getElementById('pw-gate').remove()}
+</script>
+
 
 <header>
   <div class="icon">📋</div>
