@@ -5,438 +5,792 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>来料收货流程图 · Incoming Material Receiving</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: "Microsoft YaHei", "PingFang SC", "Segoe UI", sans-serif;
-    background: #F0F2F5;
-    color: #2d3436;
-    min-height: 100vh;
-  }
-  header {
-    background: linear-gradient(135deg, #2d3436, #636e72);
-    color: white;
-    padding: 16px 32px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  header a {
-    color: rgba(255,255,255,0.7);
-    text-decoration: none;
-    font-size: 13px;
-  }
-  header a:hover { color: white; }
-  header .divider { opacity: 0.4; }
-  header h1 { font-size: 16px; font-weight: 700; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: "Microsoft YaHei","PingFang SC","Segoe UI",sans-serif; background:#F0F2F5; color:#2d3436; min-height:100vh; }
 
-  main {
-    max-width: 1160px;
-    margin: 28px auto;
-    padding: 0 20px;
-  }
+header { background:linear-gradient(135deg,#2d3436,#636e72); color:white; padding:13px 28px; display:flex; align-items:center; gap:10px; position:sticky; top:0; z-index:10; }
+header a { color:rgba(255,255,255,.6); text-decoration:none; font-size:13px; }
+header a:hover { color:white; }
+header h1 { font-size:15px; font-weight:700; }
+.hint-badge { margin-left:auto; font-size:11px; background:rgba(255,255,255,.15); padding:3px 10px; border-radius:20px; color:rgba(255,255,255,.8); }
 
-  .diagram-card {
-    background: white;
-    border-radius: 14px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-    overflow: hidden;
-    margin-bottom: 20px;
-  }
-  .diagram-card .card-header {
-    background: linear-gradient(135deg, #FF6B6B, #ee5a24);
-    padding: 14px 22px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .diagram-card .card-header h2 {
-    color: white;
-    font-size: 16px;
-    font-weight: 700;
-  }
-  .diagram-card .card-header span {
-    color: rgba(255,255,255,0.75);
-    font-size: 12px;
-  }
-  .diagram-wrap {
-    padding: 24px;
-    overflow-x: auto;
-  }
-  .diagram-wrap svg {
-    display: block;
-    max-width: 100%;
-    height: auto;
-  }
+main { max-width:1160px; margin:22px auto; padding:0 18px 110px; }
 
-  /* Legend */
-  .legend {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    padding: 14px 24px;
-    border-top: 1px solid #f0f0f0;
-    background: #fafafa;
-  }
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 11px;
-    color: #636e72;
-  }
-  .legend-dot {
-    width: 14px;
-    height: 14px;
-    border-radius: 3px;
-    border: 2px solid;
-    flex-shrink: 0;
-  }
+.diagram-card { background:white; border-radius:14px; box-shadow:0 4px 24px rgba(0,0,0,.08); overflow:hidden; margin-bottom:18px; }
+.card-header { background:linear-gradient(135deg,#FF6B6B,#ee5a24); padding:13px 20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px; }
+.card-header h2 { color:white; font-size:14px; font-weight:700; }
+.card-header span { color:rgba(255,255,255,.75); font-size:11px; }
+.diagram-wrap { padding:18px; overflow-x:auto; }
+.diagram-wrap svg { display:block; max-width:100%; height:auto; }
 
-  /* Info grid below diagram */
-  .info-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 16px;
-    margin-bottom: 20px;
-  }
-  .info-card {
-    background: white;
-    border-radius: 12px;
-    padding: 18px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  }
-  .info-card h3 {
-    font-size: 13px;
-    font-weight: 700;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .info-card ul { list-style: none; }
-  .info-card ul li {
-    font-size: 12px;
-    padding: 5px 0;
-    border-bottom: 1px solid #f5f6fa;
-    display: flex;
-    gap: 6px;
-    line-height: 1.5;
-  }
-  .info-card ul li:last-child { border-bottom: none; }
-  .info-card.border-orange { border-left: 3px solid #F39C12; }
-  .info-card.border-blue   { border-left: 3px solid #3498DB; }
-  .info-card.border-red    { border-left: 3px solid #e74c3c; }
-  .info-card.border-green  { border-left: 3px solid #27AE60; }
+/* SVG interaction */
+.sg { cursor:pointer; }
+.sg .bg {
+  transition: filter .18s ease, transform .18s ease;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+.sg:hover .bg {
+  filter: drop-shadow(0 6px 14px rgba(0,0,0,.22)) brightness(1.04);
+  transform: translateY(-2px) scale(1.03);
+}
+.sg .hint { opacity:0; transition:opacity .15s; }
+.sg:hover .hint { opacity:1; }
 
-  footer {
-    text-align: center;
-    padding: 20px;
-    font-size: 11px;
-    color: #b2bec3;
-  }
+@keyframes stepPulse {
+  0%   { filter:drop-shadow(0 0 0px rgba(255,107,107,0)); transform:scale(1); }
+  30%  { filter:drop-shadow(0 0 10px rgba(255,107,107,.8)); transform:scale(1.06); }
+  60%  { filter:drop-shadow(0 0 4px rgba(255,107,107,.4)); transform:scale(1.02); }
+  100% { filter:drop-shadow(0 0 0px rgba(255,107,107,0)); transform:scale(1); }
+}
+.sg.hl .bg { animation:stepPulse .7s ease-in-out 3; }
 
-  /* print */
-  @media print {
-    header, footer { display: none; }
-    main { margin: 0; padding: 0; max-width: 100%; }
-    .diagram-card { box-shadow: none; border: 1px solid #ddd; }
-  }
+.legend { display:flex; flex-wrap:wrap; gap:10px; padding:11px 20px; border-top:1px solid #f0f0f0; background:#fafafa; }
+.ld { display:flex; align-items:center; gap:5px; font-size:10px; color:#636e72; }
+.ld-dot { width:13px; height:13px; border-radius:3px; border:2px solid; flex-shrink:0; }
+
+.info-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:13px; }
+.ic { background:white; border-radius:10px; padding:14px; box-shadow:0 2px 8px rgba(0,0,0,.05); }
+.ic h3 { font-size:12px; font-weight:700; margin-bottom:8px; }
+.ic li { font-size:11px; padding:4px 0; border-bottom:1px solid #f5f6fa; line-height:1.5; list-style:none; }
+.ic li:last-child { border-bottom:none; }
+.bo { border-left:3px solid #F39C12; }
+.bb { border-left:3px solid #3498DB; }
+.br { border-left:3px solid #e74c3c; }
+.bg-g { border-left:3px solid #27AE60; }
+
+/* ── MODAL ── */
+/* ── 3D OVERLAY ── */
+.overlay {
+  position:fixed; inset:0;
+  background:rgba(10,10,20,.55);
+  backdrop-filter:blur(6px) saturate(1.4);
+  z-index:1000;
+  display:flex; align-items:center; justify-content:center;
+  padding:18px;
+  opacity:0;
+  transition:opacity .28s ease;
+  pointer-events:none;
+  perspective:1200px;
+}
+.overlay.open { opacity:1; pointer-events:all; }
+
+/* 3D modal card */
+.modal {
+  background:white;
+  border-radius:20px;
+  width:100%; max-width:520px; max-height:86vh;
+  overflow-y:auto;
+  /* layered shadows for 3D depth */
+  box-shadow:
+    0 2px 4px rgba(0,0,0,.08),
+    0 8px 16px rgba(0,0,0,.12),
+    0 24px 48px rgba(0,0,0,.2),
+    0 48px 80px rgba(0,0,0,.14),
+    0 0 0 1px rgba(255,255,255,.08) inset;
+  /* 3D entry: starts tilted + small + far away */
+  transform: perspective(900px) rotateX(-22deg) scale(.82) translateY(40px);
+  transform-origin: center bottom;
+  transition:
+    transform .38s cubic-bezier(.22,.68,0,1.2),
+    box-shadow .38s ease;
+}
+.overlay.open .modal {
+  transform: perspective(900px) rotateX(0deg) scale(1) translateY(0);
+  box-shadow:
+    0 2px 4px rgba(0,0,0,.06),
+    0 12px 24px rgba(0,0,0,.14),
+    0 40px 80px rgba(0,0,0,.22),
+    0 60px 100px rgba(0,0,0,.1),
+    0 0 0 1px rgba(255,255,255,.1) inset;
+}
+
+/* floating edge highlight (top rim light) */
+.modal::before {
+  content:'';
+  position:absolute;
+  top:0; left:10%; right:10%;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.8),transparent);
+  border-radius:50%;
+  pointer-events:none;
+}
+
+/* subtle bottom "table surface" reflection */
+.overlay.open::after {
+  content:'';
+  position:fixed;
+  bottom:0; left:0; right:0;
+  height:180px;
+  background:linear-gradient(to top, rgba(0,0,0,.35), transparent);
+  z-index:-1;
+  pointer-events:none;
+}
+.mh {
+  padding:20px 22px 15px;
+  display:flex; align-items:flex-start; gap:12px;
+  position:sticky; top:0;
+  border-radius:20px 20px 0 0;
+  /* glass rim highlight */
+  box-shadow:0 1px 0 rgba(255,255,255,.25) inset, 0 -1px 0 rgba(0,0,0,.1);
+}
+.micon { font-size:28px; flex-shrink:0; margin-top:1px; filter:drop-shadow(0 2px 4px rgba(0,0,0,.3)); }
+.mtitle { flex:1; }
+.mtitle h3 { font-size:15px; font-weight:700; color:white; line-height:1.3; text-shadow:0 1px 3px rgba(0,0,0,.25); }
+.mtitle p  { font-size:10px; color:rgba(255,255,255,.82); margin-top:3px; }
+.mclose {
+  background:rgba(255,255,255,.18);
+  border:1px solid rgba(255,255,255,.25);
+  color:white; width:28px; height:28px;
+  border-radius:50%; cursor:pointer; font-size:14px;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; transition:background .15s, transform .1s;
+  backdrop-filter:blur(4px);
+}
+.mclose:hover { background:rgba(255,255,255,.32); transform:scale(1.1); }
+.mb { padding:18px 22px 22px; background:#fff; border-radius:0 0 20px 20px; }
+.ms { margin-bottom:14px; }
+.ms:last-child { margin-bottom:0; }
+.slabel { font-size:9px; font-weight:700; letter-spacing:1px; color:#b2bec3; margin-bottom:7px; text-transform:uppercase; }
+.cl { display:flex; flex-direction:column; gap:5px; }
+.cli { display:flex; align-items:flex-start; gap:9px; padding:7px 9px; background:#f8f9fa; border-radius:7px; cursor:pointer; transition:background .15s; }
+.cli:hover { background:#edf2f7; }
+.cli input { width:15px; height:15px; margin-top:2px; flex-shrink:0; cursor:pointer; accent-color:#27AE60; }
+.cli .fn { font-size:12px; font-weight:700; color:#2d3436; }
+.cli .fnt { font-size:10px; color:#7f8c8d; margin-top:1px; }
+.cli.done { opacity:.55; }
+.cli.done .fn { text-decoration:line-through; }
+.tips { display:flex; flex-direction:column; gap:4px; }
+.tip { font-size:11px; color:#2d3436; padding:5px 10px; background:#f0f9ff; border-left:3px solid #3498DB; border-radius:0 6px 6px 0; line-height:1.5; }
+.warnbox { font-size:11px; color:#c0392b; padding:8px 11px; background:#fef0f0; border:1px solid #fad7d7; border-radius:7px; line-height:1.5; }
+.mactions { display:flex; gap:7px; margin-top:14px; flex-wrap:wrap; }
+.btn1 { background:#FF6B6B; color:white; border:none; border-radius:7px; padding:7px 14px; font-size:12px; font-family:inherit; cursor:pointer; font-weight:600; transition:background .15s; }
+.btn1:hover { background:#ee5a24; }
+.btn2 { background:#f0f0f0; color:#2d3436; border:none; border-radius:7px; padding:7px 14px; font-size:12px; font-family:inherit; cursor:pointer; transition:background .15s; }
+.btn2:hover { background:#dfe6e9; }
+
+/* ── CHATBOT ── */
+#cbtn { position:fixed; bottom:22px; right:22px; width:54px; height:54px; border-radius:50%; background:linear-gradient(135deg,#FF6B6B,#ee5a24); border:none; cursor:pointer; box-shadow:0 4px 18px rgba(255,107,107,.5); display:flex; align-items:center; justify-content:center; font-size:22px; z-index:900; transition:transform .2s,box-shadow .2s; }
+#cbtn:hover { transform:scale(1.1); box-shadow:0 6px 26px rgba(255,107,107,.6); }
+#cbtn .bdot { position:absolute; top:-1px; right:-1px; width:16px; height:16px; background:#27AE60; border-radius:50%; border:2px solid white; font-size:9px; color:white; display:flex; align-items:center; justify-content:center; }
+
+#cpanel { position:fixed; bottom:86px; right:22px; width:330px; max-height:510px; background:white; border-radius:16px; box-shadow:0 8px 40px rgba(0,0,0,.18); display:flex; flex-direction:column; z-index:899; transform:scale(.9) translateY(18px); transform-origin:bottom right; opacity:0; transition:opacity .2s,transform .25s cubic-bezier(.34,1.56,.64,1); pointer-events:none; }
+#cpanel.open { opacity:1; transform:scale(1) translateY(0); pointer-events:all; }
+
+.chd { background:linear-gradient(135deg,#FF6B6B,#ee5a24); padding:13px 14px; border-radius:16px 16px 0 0; display:flex; align-items:center; gap:9px; }
+.chd .av { width:34px; height:34px; background:rgba(255,255,255,.22); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px; }
+.chd .ci h4 { color:white; font-size:13px; font-weight:700; }
+.chd .ci p { color:rgba(255,255,255,.78); font-size:9px; margin-top:2px; }
+.chd .od { width:8px; height:8px; background:#55efc4; border-radius:50%; margin-left:auto; box-shadow:0 0 0 2px rgba(255,255,255,.3); }
+
+.cmsgs { flex:1; overflow-y:auto; padding:12px 10px; display:flex; flex-direction:column; gap:9px; min-height:100px; max-height:250px; }
+.cm { display:flex; gap:7px; }
+.cm.bot .cb { background:#f0f2f5; border-radius:4px 11px 11px 11px; color:#2d3436; }
+.cm.user { flex-direction:row-reverse; }
+.cm.user .cb { background:linear-gradient(135deg,#FF6B6B,#ee5a24); border-radius:11px 4px 11px 11px; color:white; }
+.cb { padding:7px 11px; font-size:11px; line-height:1.6; max-width:220px; white-space:pre-line; }
+.cav { width:26px; height:26px; border-radius:50%; background:#ffeaa7; display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0; margin-top:2px; }
+.cacts { display:flex; gap:5px; flex-wrap:wrap; margin-top:5px; }
+.cab { font-size:10px; padding:3px 9px; border-radius:20px; border:1.5px solid #FF6B6B; color:#FF6B6B; background:white; cursor:pointer; font-family:inherit; transition:all .15s; }
+.cab:hover { background:#FF6B6B; color:white; }
+
+.cqq { padding:7px 10px; border-top:1px solid #f0f0f0; display:flex; flex-wrap:wrap; gap:4px; }
+.cq { font-size:10px; padding:3px 9px; border-radius:20px; background:#f8f9fa; border:1px solid #dfe6e9; cursor:pointer; font-family:inherit; color:#636e72; transition:all .15s; white-space:nowrap; }
+.cq:hover { background:#FF6B6B; color:white; border-color:#FF6B6B; }
+
+.cia { padding:9px 10px; border-top:1px solid #f0f0f0; display:flex; gap:7px; align-items:center; }
+.cinput { flex:1; border:1.5px solid #dfe6e9; border-radius:20px; padding:6px 13px; font-size:11px; font-family:inherit; outline:none; transition:border-color .15s; }
+.cinput:focus { border-color:#FF6B6B; }
+.csend { width:30px; height:30px; background:#FF6B6B; border:none; border-radius:50%; color:white; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0; transition:background .15s; }
+.csend:hover { background:#ee5a24; }
+
+@keyframes tdot { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-5px)} }
+.td { display:flex; gap:3px; padding:8px 11px; }
+.tdd { width:5px; height:5px; background:#b2bec3; border-radius:50%; animation:tdot 1.2s infinite; }
+.tdd:nth-child(2){animation-delay:.2s} .tdd:nth-child(3){animation-delay:.4s}
+
+/* Video path box */
+.vpbox { background:#f5f6fa; border-radius:7px; padding:9px 13px; font-size:11px; font-family:monospace; color:#2d3436; word-break:break-all; text-align:left; margin:10px 0; border:1px solid #e0e0e0; }
+
+@media(max-width:600px){ #cpanel{width:calc(100vw - 44px);} main{padding:14px 10px 110px;} }
 </style>
 </head>
 <body>
 
 <header>
   <a href="index.html">← 返回主页</a>
-  <span class="divider">/</span>
+  <span style="opacity:.4">/</span>
   <h1>📦 来料收货检查流程图</h1>
-  <span style="margin-left:auto;font-size:11px;opacity:0.5;">参考文件：WH003 · WH003-F01 · QM083-F01</span>
+  <span class="hint-badge">💡 点击步骤查看详情</span>
 </header>
 
 <main>
-
-  <div class="diagram-card">
-    <div class="card-header">
-      <h2>来料收货检查流程 · Incoming Material Receiving Inspection</h2>
-      <span>适用岗位：收货员 / IE / QA / SC · 更新频率：每 2 年</span>
-    </div>
-
-    <div class="diagram-wrap">
-      <!-- ====== INLINE SVG (simulated Draw.io export) ====== -->
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 410"
-           font-family="'Microsoft YaHei','PingFang SC','Segoe UI',sans-serif">
-        <defs>
-          <linearGradient id="titleG" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stop-color="#FF6B6B"/>
-            <stop offset="100%" stop-color="#ee5a24"/>
-          </linearGradient>
-          <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-            <polygon points="0 0,8 3,0 6" fill="#636e72"/>
-          </marker>
-          <marker id="arrG" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-            <polygon points="0 0,8 3,0 6" fill="#27AE60"/>
-          </marker>
-          <marker id="arrR" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-            <polygon points="0 0,8 3,0 6" fill="#e74c3c"/>
-          </marker>
-          <filter id="sh">
-            <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.09"/>
-          </filter>
-        </defs>
-
-        <!-- ===== BG ===== -->
-        <rect width="1080" height="410" fill="#F8F9FA" rx="14"/>
-
-        <!-- ===== TITLE ===== -->
-        <rect width="1080" height="46" fill="url(#titleG)" rx="14"/>
-        <rect y="32" width="1080" height="14" fill="url(#titleG)"/>
-        <text x="540" y="30" text-anchor="middle" fill="white" font-size="15" font-weight="700" letter-spacing="1">
-          来料收货检查流程 · Incoming Material Receiving Inspection
-        </text>
-
-        <!-- ===== SWIM LANE BAR ===== -->
-        <!-- Normal lane bar -->
-        <rect x="10" y="58" width="12" height="140" fill="#FF6B6B" rx="4"/>
-        <text x="16" y="150" text-anchor="middle" fill="white" font-size="9" font-weight="700"
-              writing-mode="tb-rl" transform="rotate(180,16,128)">正常路径</text>
-
-        <!-- Exception lane bar -->
-        <rect x="10" y="240" width="12" height="142" fill="#e74c3c" rx="4"/>
-        <text x="16" y="330" text-anchor="middle" fill="white" font-size="9" font-weight="700"
-              writing-mode="tb-rl" transform="rotate(180,16,311)">异常处置</text>
-
-        <!-- ===== MAIN FLOW BOXES ===== -->
-
-        <!-- Step 1 -->
-        <rect x="30" y="72" width="140" height="72" rx="8" fill="#FFF3E0" stroke="#F39C12" stroke-width="2" filter="url(#sh)"/>
-        <text x="100" y="93" text-anchor="middle" fill="#2d3436" font-size="10" font-weight="700">Step 1</text>
-        <text x="100" y="108" text-anchor="middle" fill="#2d3436" font-size="10">文件信息一致性核对</text>
-        <text x="100" y="122" text-anchor="middle" fill="#7f8c8d" font-size="8">三单一致：</text>
-        <text x="100" y="134" text-anchor="middle" fill="#7f8c8d" font-size="8">送货单 / 实物标签 / COA</text>
-
-        <!-- Step 2 -->
-        <rect x="186" y="72" width="138" height="72" rx="8" fill="#FFFFFF" stroke="#b2bec3" stroke-width="2" filter="url(#sh)"/>
-        <text x="255" y="93" text-anchor="middle" fill="#2d3436" font-size="10" font-weight="700">Step 2</text>
-        <text x="255" y="108" text-anchor="middle" fill="#2d3436" font-size="10">打印收货文件</text>
-        <text x="255" y="122" text-anchor="middle" fill="#7f8c8d" font-size="8">SAP 打印 PO 订单</text>
-        <text x="255" y="134" text-anchor="middle" fill="#7f8c8d" font-size="8">WH003-F01 表单</text>
-
-        <!-- Step 3 -->
-        <rect x="340" y="72" width="138" height="72" rx="8" fill="#FFF3E0" stroke="#F39C12" stroke-width="2" filter="url(#sh)"/>
-        <text x="409" y="93" text-anchor="middle" fill="#2d3436" font-size="10" font-weight="700">Step 3</text>
-        <text x="409" y="108" text-anchor="middle" fill="#2d3436" font-size="10">PO 状态确认</text>
-        <text x="409" y="122" text-anchor="middle" fill="#7f8c8d" font-size="8">SAP ME23N</text>
-        <text x="409" y="134" text-anchor="middle" fill="#7f8c8d" font-size="8">查 LA 是否开放</text>
-
-        <!-- Parallel block (dashed) -->
-        <rect x="494" y="57" width="200" height="144" rx="8" fill="#EBF5FB" stroke="#5DADE2" stroke-width="2"
-              stroke-dasharray="7,4" filter="url(#sh)"/>
-        <text x="594" y="72" text-anchor="middle" fill="#2980B9" font-size="9" font-weight="700"
-              letter-spacing="1">⟨ 并 行 检 查 ⟩</text>
-
-        <!-- P1 -->
-        <rect x="502" y="78" width="184" height="34" rx="5" fill="#FFFFFF" stroke="#3498DB" stroke-width="1.5"/>
-        <text x="594" y="91" text-anchor="middle" fill="#2d3436" font-size="9" font-weight="700">Step 4 · 特殊来料识别分类</text>
-        <text x="594" y="104" text-anchor="middle" fill="#7f8c8d" font-size="8">特殊包材 / 危化品 / 特殊储存要求</text>
-
-        <!-- P2 -->
-        <rect x="502" y="118" width="184" height="34" rx="5" fill="#FFFFFF" stroke="#3498DB" stroke-width="1.5"/>
-        <text x="594" y="131" text-anchor="middle" fill="#2d3436" font-size="9" font-weight="700">Step 5 · Pinmill 原料储存检查</text>
-        <text x="594" y="144" text-anchor="middle" fill="#7f8c8d" font-size="8">Power Apps 查储存条件</text>
-
-        <!-- P3 -->
-        <rect x="502" y="158" width="184" height="34" rx="5" fill="#FFFFFF" stroke="#3498DB" stroke-width="1.5"/>
-        <text x="594" y="171" text-anchor="middle" fill="#2d3436" font-size="9" font-weight="700">物料标签审批查询</text>
-        <text x="594" y="184" text-anchor="middle" fill="#7f8c8d" font-size="8">系统查询标签是否已审批通过</text>
-
-        <!-- Decision diamond -->
-        <polygon points="784,76 850,112 784,148 718,112" fill="#F8F0FF" stroke="#9B59B6" stroke-width="2" filter="url(#sh)"/>
-        <text x="784" y="107" text-anchor="middle" fill="#6c3483" font-size="10" font-weight="700">来料</text>
-        <text x="784" y="121" text-anchor="middle" fill="#6c3483" font-size="10" font-weight="700">判定</text>
-
-        <!-- Normal box -->
-        <rect x="862" y="76" width="158" height="72" rx="8" fill="#E8F8F5" stroke="#27AE60" stroke-width="2" filter="url(#sh)"/>
-        <text x="941" y="97" text-anchor="middle" fill="#1e8449" font-size="11" font-weight="700">✓ 正常收货</text>
-        <text x="941" y="113" text-anchor="middle" fill="#2d3436" font-size="10">SAP 入库上架</text>
-        <text x="941" y="127" text-anchor="middle" fill="#7f8c8d" font-size="8">WH003-F01 记录</text>
-        <text x="941" y="139" text-anchor="middle" fill="#7f8c8d" font-size="8">归档存档</text>
-
-        <!-- ===== MAIN FLOW ARROWS ===== -->
-        <!-- s1→s2 -->
-        <line x1="170" y1="108" x2="184" y2="108" stroke="#636e72" stroke-width="1.5" marker-end="url(#arr)"/>
-        <!-- s2→s3 -->
-        <line x1="324" y1="108" x2="338" y2="108" stroke="#636e72" stroke-width="1.5" marker-end="url(#arr)"/>
-        <!-- s3→parallel -->
-        <line x1="478" y1="108" x2="492" y2="108" stroke="#636e72" stroke-width="1.5" marker-end="url(#arr)"/>
-        <!-- parallel→decision -->
-        <line x1="694" y1="112" x2="716" y2="112" stroke="#636e72" stroke-width="1.5" marker-end="url(#arr)"/>
-        <!-- decision→normal (合格) -->
-        <line x1="850" y1="112" x2="860" y2="112" stroke="#27AE60" stroke-width="2" marker-end="url(#arrG)"/>
-        <text x="854" y="106" text-anchor="middle" fill="#27AE60" font-size="8" font-weight="700">合格</text>
-
-        <!-- ===== "NO" ARROW: decision → exception ===== -->
-        <path d="M784,148 L784,220 L90,220 L90,238" fill="none" stroke="#e74c3c"
-              stroke-width="2" stroke-dasharray="7,4" marker-end="url(#arrR)"/>
-        <text x="798" y="185" fill="#e74c3c" font-size="9" font-weight="700">异常</text>
-
-        <!-- ===== EXCEPTION PATH BOXES ===== -->
-        <!-- Section label -->
-        <text x="420" y="238" text-anchor="middle" fill="#e74c3c" font-size="8.5" font-weight="700" letter-spacing="1">
-          — 异常处置流程（第7章）—
-        </text>
-
-        <!-- ① -->
-        <rect x="28" y="245" width="120" height="68" rx="7" fill="#FFF5F5" stroke="#e74c3c" stroke-width="1.5" filter="url(#sh)"/>
-        <text x="88" y="265" text-anchor="middle" fill="#c0392b" font-size="13" font-weight="700">①</text>
-        <text x="88" y="280" text-anchor="middle" fill="#2d3436" font-size="10">暂停收货</text>
-        <text x="88" y="294" text-anchor="middle" fill="#7f8c8d" font-size="8">停止卸货/清点</text>
-        <text x="88" y="306" text-anchor="middle" fill="#7f8c8d" font-size="8">保持物料原状</text>
-
-        <!-- ② -->
-        <rect x="162" y="245" width="120" height="68" rx="7" fill="#FFF5F5" stroke="#e74c3c" stroke-width="1.5" filter="url(#sh)"/>
-        <text x="222" y="265" text-anchor="middle" fill="#c0392b" font-size="13" font-weight="700">②</text>
-        <text x="222" y="280" text-anchor="middle" fill="#2d3436" font-size="10">隔离标识</text>
-        <text x="222" y="294" text-anchor="middle" fill="#7f8c8d" font-size="8">"待判定"区</text>
-        <text x="222" y="306" text-anchor="middle" fill="#7f8c8d" font-size="8">贴状态标识</text>
-
-        <!-- ③ -->
-        <rect x="296" y="245" width="134" height="68" rx="7" fill="#FFF5F5" stroke="#e74c3c" stroke-width="1.5" filter="url(#sh)"/>
-        <text x="363" y="265" text-anchor="middle" fill="#c0392b" font-size="13" font-weight="700">③</text>
-        <text x="363" y="280" text-anchor="middle" fill="#2d3436" font-size="10">通知与记录</text>
-        <text x="363" y="294" text-anchor="middle" fill="#7f8c8d" font-size="8">WH003-F01</text>
-        <text x="363" y="306" text-anchor="middle" fill="#7f8c8d" font-size="8">QM083-F01 缺陷表</text>
-
-        <!-- ④ -->
-        <rect x="444" y="245" width="120" height="68" rx="7" fill="#FFF5F5" stroke="#e74c3c" stroke-width="1.5" filter="url(#sh)"/>
-        <text x="504" y="265" text-anchor="middle" fill="#c0392b" font-size="13" font-weight="700">④</text>
-        <text x="504" y="280" text-anchor="middle" fill="#2d3436" font-size="10">QA 评估</text>
-        <text x="504" y="294" text-anchor="middle" fill="#7f8c8d" font-size="8">可启动偏差调查</text>
-        <text x="504" y="306" text-anchor="middle" fill="#7f8c8d" font-size="8">判定处置方式</text>
-
-        <!-- ⑤ -->
-        <rect x="578" y="245" width="126" height="68" rx="7" fill="#FFF5F5" stroke="#e74c3c" stroke-width="1.5" filter="url(#sh)"/>
-        <text x="641" y="265" text-anchor="middle" fill="#c0392b" font-size="13" font-weight="700">⑤</text>
-        <text x="641" y="280" text-anchor="middle" fill="#2d3436" font-size="10">处置执行</text>
-        <text x="641" y="294" text-anchor="middle" fill="#7f8c8d" font-size="8">退货/换货/让步</text>
-        <text x="641" y="306" text-anchor="middle" fill="#7f8c8d" font-size="8">挑选使用/报废</text>
-
-        <!-- ⑥ -->
-        <rect x="718" y="245" width="134" height="68" rx="7" fill="#E8F8F5" stroke="#27AE60" stroke-width="1.5" filter="url(#sh)"/>
-        <text x="785" y="265" text-anchor="middle" fill="#1e8449" font-size="13" font-weight="700">⑥</text>
-        <text x="785" y="280" text-anchor="middle" fill="#2d3436" font-size="10">归档关闭</text>
-        <text x="785" y="294" text-anchor="middle" fill="#7f8c8d" font-size="8">补齐所有记录</text>
-        <text x="785" y="306" text-anchor="middle" fill="#7f8c8d" font-size="8">通知采购跟进整改</text>
-
-        <!-- Exception arrows -->
-        <line x1="148" y1="279" x2="160" y2="279" stroke="#e74c3c" stroke-width="1.5" marker-end="url(#arrR)"/>
-        <line x1="282" y1="279" x2="294" y2="279" stroke="#e74c3c" stroke-width="1.5" marker-end="url(#arrR)"/>
-        <line x1="430" y1="279" x2="442" y2="279" stroke="#e74c3c" stroke-width="1.5" marker-end="url(#arrR)"/>
-        <line x1="564" y1="279" x2="576" y2="279" stroke="#e74c3c" stroke-width="1.5" marker-end="url(#arrR)"/>
-        <line x1="704" y1="279" x2="716" y2="279" stroke="#27AE60" stroke-width="1.5" marker-end="url(#arrG)"/>
-
-        <!-- ===== FOOTER BAR ===== -->
-        <rect y="378" width="1080" height="32" fill="#dfe6e9" rx="8"/>
-        <text x="540" y="399" text-anchor="middle" fill="#636e72" font-size="9">
-          参考文件：WH003 · WH003-F01 · QM083-F01 ·
-          适用岗位：收货员 / IE / QA / SC ·
-          更新频率：每 2 年一次
-        </text>
-      </svg>
-      <!-- ====== END SVG ====== -->
-    </div>
-
-    <!-- Legend -->
-    <div class="legend">
-      <div class="legend-item">
-        <div class="legend-dot" style="background:#FFF3E0;border-color:#F39C12;"></div>
-        需重点核查步骤
-      </div>
-      <div class="legend-item">
-        <div class="legend-dot" style="background:#FFFFFF;border-color:#b2bec3;"></div>
-        标准执行步骤
-      </div>
-      <div class="legend-item">
-        <div class="legend-dot" style="background:#EBF5FB;border-color:#5DADE2;"></div>
-        并行检查（同步进行）
-      </div>
-      <div class="legend-item">
-        <div class="legend-dot" style="background:#F8F0FF;border-color:#9B59B6;"></div>
-        判定节点
-      </div>
-      <div class="legend-item">
-        <div class="legend-dot" style="background:#E8F8F5;border-color:#27AE60;"></div>
-        完成/正常结果
-      </div>
-      <div class="legend-item">
-        <div class="legend-dot" style="background:#FFF5F5;border-color:#e74c3c;"></div>
-        异常处置步骤
-      </div>
-    </div>
+<div class="diagram-card">
+  <div class="card-header">
+    <h2>来料收货检查流程 · Incoming Material Receiving Inspection</h2>
+    <span>WH003 · WH003-F01 · QM083-F01 · 每 2 年更新</span>
   </div>
+  <div class="diagram-wrap">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 410" font-family="'Microsoft YaHei','PingFang SC','Segoe UI',sans-serif">
+<defs>
+  <linearGradient id="tG" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#FF6B6B"/><stop offset="100%" stop-color="#ee5a24"/></linearGradient>
+  <marker id="ar" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#636e72"/></marker>
+  <marker id="arG" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#27AE60"/></marker>
+  <marker id="arR" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#e74c3c"/></marker>
+  <filter id="sh"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.09"/></filter>
+</defs>
+<rect width="1080" height="410" fill="#F8F9FA" rx="14"/>
+<rect width="1080" height="46" fill="url(#tG)" rx="14"/>
+<rect y="32" width="1080" height="14" fill="url(#tG)"/>
+<text x="540" y="30" text-anchor="middle" fill="white" font-size="14" font-weight="700" letter-spacing="1">来料收货检查流程 · Incoming Material Receiving Inspection</text>
+<!-- lane bars -->
+<rect x="10" y="58" width="11" height="148" fill="#FF6B6B" rx="4"/>
+<rect x="10" y="240" width="11" height="146" fill="#e74c3c" rx="4"/>
 
-  <!-- Supporting info cards -->
-  <div class="info-grid">
+<!-- STEP 1 -->
+<g class="sg" id="sg-s1" onclick="openModal('s1')">
+  <rect class="bg" x="30" y="72" width="140" height="74" rx="8" fill="#FFF3E0" stroke="#F39C12" stroke-width="2" filter="url(#sh)"/>
+  <text x="162" y="80" text-anchor="end" fill="#F39C12" font-size="9" class="hint">点击↗</text>
+  <text x="100" y="93" text-anchor="middle" fill="#2d3436" font-size="10" font-weight="700">Step 1</text>
+  <text x="100" y="108" text-anchor="middle" fill="#2d3436" font-size="10">文件信息一致性核对</text>
+  <text x="100" y="122" text-anchor="middle" fill="#7f8c8d" font-size="8">三单一致：</text>
+  <text x="100" y="134" text-anchor="middle" fill="#7f8c8d" font-size="8">送货单/实物标签/COA</text>
+</g>
 
-    <div class="info-card border-orange">
-      <h3>🔑 三单一致核对要素</h3>
-      <ul>
-        <li>· 物料编码（Material Code）</li>
-        <li>· 物料名称（Material Description）</li>
-        <li>· 批号（Batch Number）</li>
-        <li>· 生产日期 &amp; 有效期</li>
-        <li>· 供应商名称</li>
-        <li>· 送货数量</li>
-        <li>· PO 订单号</li>
-      </ul>
-      <div style="margin-top:10px;font-size:10px;color:#7f8c8d;background:#fff8f0;padding:6px 8px;border-radius:5px;">
-        ✏️ 填写用蓝色签字笔，错误单横线更正并签名注日期
-      </div>
-    </div>
+<!-- STEP 2 -->
+<g class="sg" id="sg-s2" onclick="openModal('s2')">
+  <rect class="bg" x="186" y="72" width="136" height="74" rx="8" fill="#FFFFFF" stroke="#b2bec3" stroke-width="2" filter="url(#sh)"/>
+  <text x="254" y="93" text-anchor="middle" fill="#2d3436" font-size="10" font-weight="700">Step 2</text>
+  <text x="254" y="108" text-anchor="middle" fill="#2d3436" font-size="10">打印收货文件</text>
+  <text x="254" y="122" text-anchor="middle" fill="#7f8c8d" font-size="8">SAP 打印 PO</text>
+  <text x="254" y="134" text-anchor="middle" fill="#7f8c8d" font-size="8">WH003-F01 表单</text>
+</g>
 
-    <div class="info-card border-blue">
-      <h3>👥 相关方分工</h3>
-      <ul>
-        <li>· <b>IE / SC</b> — 提前知晓到货信息</li>
-        <li>· <b>收货员（手动）</b> — 核对文件/实物/查询</li>
-        <li>· <b>收货员（SAP）</b> — 打印/录入/标识</li>
-        <li>· <b>QA / SC</b> — 异常通知与判定处置</li>
-        <li>· <b>采购</b> — PO确认/供应商协调</li>
-        <li>· <b>QC compliance</b> — 法规审查</li>
-      </ul>
-    </div>
+<!-- STEP 3 -->
+<g class="sg" id="sg-s3" onclick="openModal('s3')">
+  <rect class="bg" x="338" y="72" width="138" height="74" rx="8" fill="#FFF3E0" stroke="#F39C12" stroke-width="2" filter="url(#sh)"/>
+  <text x="407" y="93" text-anchor="middle" fill="#2d3436" font-size="10" font-weight="700">Step 3</text>
+  <text x="407" y="108" text-anchor="middle" fill="#2d3436" font-size="10">PO 状态确认</text>
+  <text x="407" y="122" text-anchor="middle" fill="#7f8c8d" font-size="8">SAP ME23N</text>
+  <text x="407" y="134" text-anchor="middle" fill="#7f8c8d" font-size="8">查 LA 是否开放</text>
+</g>
 
-    <div class="info-card border-red">
-      <h3>⚠ 常见异常 &amp; 对应动作</h3>
-      <ul>
-        <li>· 文件异常/破损 → 停止收货，通知 SC</li>
-        <li>· 来货标签异常 → 停止收货，通知 SC/QA</li>
-        <li>· 数量/有效期不符 → 通知 QC/采购</li>
-        <li>· 供应商信息不符 → 停止收货，通知 SQE</li>
-        <li>· 送货量 ≠ PO → 部分接收，通知采购确认</li>
-        <li>· 无证书/COA → 停止收货，通知 SC</li>
-      </ul>
-    </div>
+<!-- PARALLEL BLOCK -->
+<rect x="492" y="57" width="200" height="148" rx="8" fill="#EBF5FB" stroke="#5DADE2" stroke-width="2" stroke-dasharray="7,4"/>
+<text x="592" y="72" text-anchor="middle" fill="#2980B9" font-size="9" font-weight="700" letter-spacing="1">⟨ 并行检查 ⟩</text>
 
-    <div class="info-card border-green">
-      <h3>📞 关键联系人</h3>
-      <ul>
-        <li>· IE &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; emma.jin</li>
-        <li>· SC-PIS &nbsp;&nbsp;&nbsp;&nbsp; yu.zhou</li>
-        <li>· SC-CCM/IA &nbsp; birou.dai</li>
-        <li>· SC-Pinmill &nbsp; jenny.zhu</li>
-        <li>· SC-Solvent &nbsp; yuchen.zhou</li>
-        <li>· QC compliance &nbsp; lynn.ge</li>
-      </ul>
-      <div style="font-size:10px;color:#7f8c8d;margin-top:6px;">以上均 @merckgroup.com</div>
-    </div>
+<!-- P1 -->
+<g class="sg" id="sg-p1" onclick="openModal('p1')">
+  <rect class="bg" x="500" y="78" width="184" height="34" rx="5" fill="#FFFFFF" stroke="#3498DB" stroke-width="1.5"/>
+  <text x="592" y="91" text-anchor="middle" fill="#2d3436" font-size="9" font-weight="700">Step 4 · 特殊来料识别分类</text>
+  <text x="592" y="104" text-anchor="middle" fill="#7f8c8d" font-size="8">特殊包材 / 危化品 / 特殊储存</text>
+</g>
 
+<!-- P2 -->
+<g class="sg" id="sg-p2" onclick="openModal('p2')">
+  <rect class="bg" x="500" y="118" width="184" height="34" rx="5" fill="#FFFFFF" stroke="#3498DB" stroke-width="1.5"/>
+  <text x="592" y="131" text-anchor="middle" fill="#2d3436" font-size="9" font-weight="700">Step 5 · Pinmill 原料储存检查</text>
+  <text x="592" y="144" text-anchor="middle" fill="#7f8c8d" font-size="8">Power Apps 查储存条件</text>
+</g>
+
+<!-- P3 -->
+<g class="sg" id="sg-p3" onclick="openModal('p3')">
+  <rect class="bg" x="500" y="158" width="184" height="34" rx="5" fill="#FFFFFF" stroke="#3498DB" stroke-width="1.5"/>
+  <text x="592" y="171" text-anchor="middle" fill="#2d3436" font-size="9" font-weight="700">物料标签审批查询</text>
+  <text x="592" y="184" text-anchor="middle" fill="#7f8c8d" font-size="8">系统查询标签是否已审批</text>
+</g>
+
+<!-- DECISION -->
+<g class="sg" id="sg-dec" onclick="openModal('dec')">
+  <polygon class="bg" points="782,78 848,112 782,148 716,112" fill="#F8F0FF" stroke="#9B59B6" stroke-width="2" filter="url(#sh)"/>
+  <text x="782" y="108" text-anchor="middle" fill="#6c3483" font-size="10" font-weight="700">来料</text>
+  <text x="782" y="122" text-anchor="middle" fill="#6c3483" font-size="10" font-weight="700">判定</text>
+</g>
+
+<!-- NORMAL OUTCOME -->
+<g class="sg" id="sg-ok" onclick="openModal('ok')">
+  <rect class="bg" x="860" y="76" width="158" height="72" rx="8" fill="#E8F8F5" stroke="#27AE60" stroke-width="2" filter="url(#sh)"/>
+  <text x="939" y="97" text-anchor="middle" fill="#1e8449" font-size="11" font-weight="700">✓ 正常收货</text>
+  <text x="939" y="113" text-anchor="middle" fill="#2d3436" font-size="10">SAP 入库上架</text>
+  <text x="939" y="127" text-anchor="middle" fill="#7f8c8d" font-size="8">WH003-F01 记录归档</text>
+</g>
+
+<!-- MAIN ARROWS -->
+<line x1="170" y1="109" x2="184" y2="109" stroke="#636e72" stroke-width="1.5" marker-end="url(#ar)"/>
+<line x1="322" y1="109" x2="336" y2="109" stroke="#636e72" stroke-width="1.5" marker-end="url(#ar)"/>
+<line x1="476" y1="109" x2="490" y2="109" stroke="#636e72" stroke-width="1.5" marker-end="url(#ar)"/>
+<line x1="692" y1="112" x2="714" y2="112" stroke="#636e72" stroke-width="1.5" marker-end="url(#ar)"/>
+<line x1="848" y1="112" x2="858" y2="112" stroke="#27AE60" stroke-width="2" marker-end="url(#arG)"/>
+<text x="853" y="107" text-anchor="middle" fill="#27AE60" font-size="8" font-weight="700">合格</text>
+<path d="M782,148 L782,220 L80,220 L80,238" fill="none" stroke="#e74c3c" stroke-width="2" stroke-dasharray="6,3" marker-end="url(#arR)"/>
+<text x="796" y="186" fill="#e74c3c" font-size="9" font-weight="700">异常</text>
+
+<!-- EXCEPTION LABEL -->
+<text x="430" y="238" text-anchor="middle" fill="#e74c3c" font-size="8.5" font-weight="700" letter-spacing="1">— 异常处置流程（第7章）—</text>
+
+<!-- E1 -->
+<g class="sg" id="sg-e1" onclick="openModal('ex')">
+  <rect class="bg" x="26" y="245" width="118" height="68" rx="7" fill="#FFF5F5" stroke="#e74c3c" stroke-width="1.5" filter="url(#sh)"/>
+  <text x="85" y="266" text-anchor="middle" fill="#c0392b" font-size="13" font-weight="700">①</text>
+  <text x="85" y="281" text-anchor="middle" fill="#2d3436" font-size="10">暂停收货</text>
+  <text x="85" y="295" text-anchor="middle" fill="#7f8c8d" font-size="8">停止卸货/清点</text>
+  <text x="85" y="307" text-anchor="middle" fill="#7f8c8d" font-size="8">保持物料原状</text>
+</g>
+<!-- E2 -->
+<g class="sg" id="sg-e2" onclick="openModal('ex')">
+  <rect class="bg" x="158" y="245" width="118" height="68" rx="7" fill="#FFF5F5" stroke="#e74c3c" stroke-width="1.5" filter="url(#sh)"/>
+  <text x="217" y="266" text-anchor="middle" fill="#c0392b" font-size="13" font-weight="700">②</text>
+  <text x="217" y="281" text-anchor="middle" fill="#2d3436" font-size="10">隔离标识</text>
+  <text x="217" y="295" text-anchor="middle" fill="#7f8c8d" font-size="8">"待判定"区</text>
+  <text x="217" y="307" text-anchor="middle" fill="#7f8c8d" font-size="8">贴状态标识</text>
+</g>
+<!-- E3 -->
+<g class="sg" id="sg-e3" onclick="openModal('ex')">
+  <rect class="bg" x="290" y="245" width="132" height="68" rx="7" fill="#FFF5F5" stroke="#e74c3c" stroke-width="1.5" filter="url(#sh)"/>
+  <text x="356" y="266" text-anchor="middle" fill="#c0392b" font-size="13" font-weight="700">③</text>
+  <text x="356" y="281" text-anchor="middle" fill="#2d3436" font-size="10">通知与记录</text>
+  <text x="356" y="295" text-anchor="middle" fill="#7f8c8d" font-size="8">WH003-F01</text>
+  <text x="356" y="307" text-anchor="middle" fill="#7f8c8d" font-size="8">QM083-F01 缺陷表</text>
+</g>
+<!-- E4 -->
+<g class="sg" id="sg-e4" onclick="openModal('ex')">
+  <rect class="bg" x="436" y="245" width="118" height="68" rx="7" fill="#FFF5F5" stroke="#e74c3c" stroke-width="1.5" filter="url(#sh)"/>
+  <text x="495" y="266" text-anchor="middle" fill="#c0392b" font-size="13" font-weight="700">④</text>
+  <text x="495" y="281" text-anchor="middle" fill="#2d3436" font-size="10">QA 评估</text>
+  <text x="495" y="295" text-anchor="middle" fill="#7f8c8d" font-size="8">可启动偏差调查</text>
+  <text x="495" y="307" text-anchor="middle" fill="#7f8c8d" font-size="8">判定处置方式</text>
+</g>
+<!-- E5 -->
+<g class="sg" id="sg-e5" onclick="openModal('ex')">
+  <rect class="bg" x="568" y="245" width="126" height="68" rx="7" fill="#FFF5F5" stroke="#e74c3c" stroke-width="1.5" filter="url(#sh)"/>
+  <text x="631" y="266" text-anchor="middle" fill="#c0392b" font-size="13" font-weight="700">⑤</text>
+  <text x="631" y="281" text-anchor="middle" fill="#2d3436" font-size="10">处置执行</text>
+  <text x="631" y="295" text-anchor="middle" fill="#7f8c8d" font-size="8">退货/换货/让步</text>
+  <text x="631" y="307" text-anchor="middle" fill="#7f8c8d" font-size="8">挑选/报废</text>
+</g>
+<!-- E6 -->
+<g class="sg" id="sg-e6" onclick="openModal('ex')">
+  <rect class="bg" x="708" y="245" width="132" height="68" rx="7" fill="#E8F8F5" stroke="#27AE60" stroke-width="1.5" filter="url(#sh)"/>
+  <text x="774" y="266" text-anchor="middle" fill="#1e8449" font-size="13" font-weight="700">⑥</text>
+  <text x="774" y="281" text-anchor="middle" fill="#2d3436" font-size="10">归档关闭</text>
+  <text x="774" y="295" text-anchor="middle" fill="#7f8c8d" font-size="8">补齐记录</text>
+  <text x="774" y="307" text-anchor="middle" fill="#7f8c8d" font-size="8">通知采购跟进整改</text>
+</g>
+
+<!-- EXCEPTION ARROWS -->
+<line x1="144" y1="279" x2="156" y2="279" stroke="#e74c3c" stroke-width="1.5" marker-end="url(#arR)"/>
+<line x1="276" y1="279" x2="288" y2="279" stroke="#e74c3c" stroke-width="1.5" marker-end="url(#arR)"/>
+<line x1="422" y1="279" x2="434" y2="279" stroke="#e74c3c" stroke-width="1.5" marker-end="url(#arR)"/>
+<line x1="554" y1="279" x2="566" y2="279" stroke="#e74c3c" stroke-width="1.5" marker-end="url(#arR)"/>
+<line x1="694" y1="279" x2="706" y2="279" stroke="#27AE60" stroke-width="1.5" marker-end="url(#arG)"/>
+
+<!-- FOOTER -->
+<rect y="378" width="1080" height="32" fill="#dfe6e9" rx="8"/>
+<text x="540" y="399" text-anchor="middle" fill="#636e72" font-size="9">参考文件：WH003 · WH003-F01 · QM083-F01 · 适用岗位：收货员 / IE / QA / SC · 更新频率：每2年</text>
+</svg>
   </div>
+  <div class="legend">
+    <div class="ld"><div class="ld-dot" style="background:#FFF3E0;border-color:#F39C12;"></div>重点核查</div>
+    <div class="ld"><div class="ld-dot" style="background:#fff;border-color:#b2bec3;"></div>标准步骤</div>
+    <div class="ld"><div class="ld-dot" style="background:#EBF5FB;border-color:#5DADE2;"></div>并行检查</div>
+    <div class="ld"><div class="ld-dot" style="background:#F8F0FF;border-color:#9B59B6;"></div>判定节点</div>
+    <div class="ld"><div class="ld-dot" style="background:#E8F8F5;border-color:#27AE60;"></div>完成/正常</div>
+    <div class="ld"><div class="ld-dot" style="background:#FFF5F5;border-color:#e74c3c;"></div>异常处置</div>
+    <div class="ld" style="margin-left:auto;color:#aaa;">💡 点击任意步骤查看详细操作说明</div>
+  </div>
+</div>
 
+<div class="info-grid">
+  <div class="ic bo">
+    <h3>🔑 三单一致核对要素</h3>
+    <ul>
+      <li>· 物料编码（Material Code）</li>
+      <li>· 物料名称（Material Description）</li>
+      <li>· 批号（Batch Number）</li>
+      <li>· 生产日期 &amp; 有效期</li>
+      <li>· 供应商名称 / 送货数量 / PO号</li>
+    </ul>
+    <div style="margin-top:8px;font-size:10px;color:#7f8c8d;background:#fff8f0;padding:5px 8px;border-radius:5px;">✏️ 蓝色签字笔填写，错误单横线更正+签名+日期</div>
+  </div>
+  <div class="ic bb">
+    <h3>👥 相关方分工</h3>
+    <ul>
+      <li>· <b>IE / SC</b> — 提前知晓到货信息</li>
+      <li>· <b>收货员（手动）</b> — 核对文件/实物/查询</li>
+      <li>· <b>收货员（SAP）</b> — 打印/录入/标识</li>
+      <li>· <b>QA / SC</b> — 异常通知与判定</li>
+      <li>· <b>采购</b> — PO确认/供应商协调</li>
+      <li>· <b>QC compliance</b> — 法规审查</li>
+    </ul>
+  </div>
+  <div class="ic br">
+    <h3>⚠ 常见异常处理</h3>
+    <ul>
+      <li>· 文件异常/破损 → 停收，通知 SC</li>
+      <li>· 标签异常 → 停收，通知 SC/QA</li>
+      <li>· 数量/有效期不符 → 通知 QC/采购</li>
+      <li>· 供应商信息不符 → 通知 SQE</li>
+      <li>· COA 缺失/模糊 → 要求供应商补件</li>
+    </ul>
+  </div>
+  <div class="ic bg-g">
+    <h3>📞 关键联系人</h3>
+    <ul>
+      <li>· IE</li>
+      <li>· SC-PIS</li>
+      <li>· SC-CCM/IA</li>
+      <li>· SC-Pinmill</li>
+      <li>· SC-Solvent</li>
+      <li>· QC compliance</li>
+    </ul>
+  </div>
+</div>
 </main>
 
-<footer>
-  来料收货检查作业指导书 · WH003 ·
-  <a href="来料收货流程图.drawio" style="color:#b2bec3;" download>下载 Draw.io 源文件</a>
-</footer>
+<!-- ══ MODAL ══ -->
+<div class="overlay" id="overlay" onclick="closeOverlay(event)">
+  <div class="modal" id="modal">
+    <div class="mh" id="mhead">
+      <span class="micon" id="micon"></span>
+      <div class="mtitle"><h3 id="mtitle"></h3><p id="msub"></p></div>
+      <button class="mclose" onclick="closeModal()">✕</button>
+    </div>
+    <div class="mb" id="mbody"></div>
+  </div>
+</div>
 
+<!-- ══ VIDEO MODAL ══ -->
+<div class="overlay" id="voverlay" onclick="closeVid(event)">
+  <div class="modal">
+    <div class="mh" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);">
+      <span class="micon">🎬</span>
+      <div class="mtitle"><h3>SAP 操作培训视频</h3><p>来料收货SAP演示.mp4</p></div>
+      <button class="mclose" onclick="closeVid()">✕</button>
+    </div>
+    <div class="mb">
+      <p style="font-size:12px;color:#636e72;">该培训视频存放于公司内部共享盘，请联系仓库同事获取。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CHATBOT ══ -->
+<button id="cbtn" onclick="toggleChat()">
+  🤖
+  <span class="bdot">1</span>
+</button>
+<div id="cpanel">
+  <div class="chd">
+    <div class="av">🤖</div>
+    <div class="ci">
+      <h4>收货小助手</h4>
+      <p>在线 · 随时为您解答</p>
+    </div>
+    <div class="od"></div>
+  </div>
+  <div class="cmsgs" id="cmsgs"></div>
+  <div class="cqq">
+    <button class="cq" onclick="askQuick('三单一致怎么核对')">三单核对</button>
+    <button class="cq" onclick="askQuick('SAP怎么入库')">SAP入库</button>
+    <button class="cq" onclick="askQuick('发现异常怎么办')">发现异常</button>
+    <button class="cq" onclick="askQuick('Pinmill储存条件')">Pinmill</button>
+    <button class="cq" onclick="askQuick('联系谁')">联系人</button>
+  </div>
+  <div class="cia">
+    <input class="cinput" id="cinput" placeholder="有什么问题问我…" onkeydown="if(event.key==='Enter')sendMsg()"/>
+    <button class="csend" onclick="sendMsg()">➤</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// STEP DATA
+// ═══════════════════════════════════════
+const STEPS = {
+  s1:{
+    icon:'📋', title:'Step 1 · 文件信息一致性核对', sub:'三单一致：送货单 / 实物标签 / COA',
+    color:'#F39C12', bg:'linear-gradient(135deg,#F39C12,#e67e22)',
+    checks:[
+      {f:'物料编码（Material Code）',n:'三处完全一致'},
+      {f:'物料名称（Material Description）',n:'完整名称一致，无缩写差异'},
+      {f:'批号（Batch Number）',n:'同批次，不得混批'},
+      {f:'生产日期 & 有效期',n:'COA 与实物标签日期一致'},
+      {f:'供应商名称',n:'与 PO 登记供应商一致'},
+      {f:'送货数量',n:'与客户单号数量一致'},
+      {f:'PO 订单号',n:'核对 PO 号码是否匹配'},
+    ],
+    tips:['「三单」指送货单、实物标签、COA，三者以上信息完全一致','任何不符立即停止收货，联系 SC 或相关责任部门确认'],
+    warn:'发现信息不符 → 不得继续收货 → 填写 WH003-F01 异常记录 → 转第7章异常处置'
+  },
+  s2:{
+    icon:'🖨️', title:'Step 2 · 打印收货文件', sub:'PO 订单 + WH003-F01 表单',
+    color:'#636e72', bg:'linear-gradient(135deg,#636e72,#2d3436)',
+    checks:[
+      {f:'PO 订单（Purchase Order）',n:'从 SAP 打印，确认物料信息与数量'},
+      {f:'WH003-F01 来料检验记录表',n:'作为收货过程记录，逐项填写'},
+    ],
+    tips:[
+      '使用蓝色签字笔，字迹清晰',
+      '不适用项划 "/" 并签署 NA、签名及日期',
+      '填写错误用单横线更正并签名注日期，禁用涂改液',
+    ],
+    warn: null
+  },
+  s3:{
+    icon:'🔍', title:'Step 3 · PO 状态确认', sub:'SAP ME23N — 查 LA 是否开放',
+    color:'#F39C12', bg:'linear-gradient(135deg,#F39C12,#e67e22)',
+    checks:[
+      {f:'SAP 事务码：ME23N',n:'查看 PO 详情页'},
+      {f:'查看 Confirmation 行',n:'确认 LA（Line Availability）是否开放'},
+      {f:'核对 PO 数量与单位',n:'是否与实际到货一致'},
+    ],
+    tips:['LA 未开放时，不得进行 SAP 收货过账','LA 未开放请联系对应 SC 处理后再继续'],
+    warn:'LA 未开放 → 暂停 SAP 过账 → 联系 SC 确认后再继续'
+  },
+  p1:{
+    icon:'⚗️', title:'Step 4 · 特殊来料识别分类', sub:'查询系统确认物料特殊管理要求',
+    color:'#3498DB', bg:'linear-gradient(135deg,#3498DB,#2980b9)',
+    checks:[
+      {f:'是否属于特殊包材',n:'需进入特殊来料登记系统查询'},
+      {f:'是否属于危化品',n:'需按危化品 SOP 处理'},
+      {f:'是否有特殊储存要求',n:'如冷链/防潮/隔离区域'},
+      {f:'是否有特殊检验要求',n:'如需 QC 额外抽检'},
+      {f:'是否有特殊放行要求',n:'如需授权人批准'},
+    ],
+    tips:['按系统分类要求进行收货，存放于规定区域','特殊物料须张贴对应状态标识'],
+    warn: null
+  },
+  p2:{
+    icon:'🏭', title:'Step 5 · Pinmill 原料储存检查', sub:'Power Apps 查询储存条件',
+    color:'#3498DB', bg:'linear-gradient(135deg,#3498DB,#2980b9)',
+    checks:[
+      {f:'Power Apps 储存条件查询系统',n:'内网 AI 应用，输入物料查询'},
+      {f:'包装完好，无破损/变形',n:''},
+      {f:'无受潮、污染或泄漏',n:'包装干燥清洁'},
+      {f:'标签清晰完整，信息可读',n:''},
+      {f:'运输条件符合储存要求',n:'如冷链则确认温度记录'},
+    ],
+    tips:['储存条件不符合时立即通知仓储主管评估','评估期间物料置于待判定区，不得入库上架'],
+    warn:'储存条件不符 → 立即通知仓储主管 → 待确认后再决定是否接收'
+  },
+  p3:{
+    icon:'🏷️', title:'物料标签审批查询', sub:'系统查询标签是否已审批通过',
+    color:'#3498DB', bg:'linear-gradient(135deg,#3498DB,#2980b9)',
+    checks:[
+      {f:'进入特殊来料登记包材系统',n:'内网查询，也可访问 pkg-doc 页面'},
+      {f:'输入物料编码查询',n:'确认该物料标签状态'},
+      {f:'确认标签已通过审批',n:'未审批物料不得正常收货'},
+    ],
+    tips:['标签未审批的物料需通知 QA 处理','审批通过后方可继续收货流程'],
+    warn:'标签未审批 → 通知 QA → 转入异常处置或等待审批通过'
+  },
+  dec:{
+    icon:'⚖️', title:'来料收货判定', sub:'综合所有检查结果进行最终判定',
+    color:'#9B59B6', bg:'linear-gradient(135deg,#9B59B6,#6c3483)',
+    checks:[
+      {f:'文件三单一致',n:'Step 1 通过'},
+      {f:'PO 状态正常（LA 开放）',n:'Step 3 通过'},
+      {f:'特殊来料要求均已满足',n:'Step 4 通过'},
+      {f:'Pinmill 储存条件符合（如适用）',n:'Step 5 通过'},
+      {f:'标签审批通过',n:'Step 标签查询通过'},
+      {f:'包装外观无异常',n:'现场实物检查通过'},
+    ],
+    tips:['以上全部通过 → 正常收货，SAP 过账入库','任一不通过 → 转入第7章异常处置流程'],
+    warn: null
+  },
+  ok:{
+    icon:'✅', title:'正常收货 · SAP 入库上架', sub:'完成过账，实物上架',
+    color:'#27AE60', bg:'linear-gradient(135deg,#27AE60,#1e8449)',
+    checks:[
+      {f:'SAP MIGO 收货过账',n:'录入批次/数量/日期，过账日期与到货日期一致'},
+      {f:'WH003-F01 完整填写并签名归档',n:''},
+      {f:'实物按产线区域上架',n:'按 FEFO 原则存放（先到期先用）'},
+      {f:'系统库存与实物一致确认',n:''},
+    ],
+    tips:['SAP 过账日期须与实际到货日期一致','FEFO = First Expired First Out，先到期的放前面先取用'],
+    warn: null,
+    hasVideo: true
+  },
+  ex:{
+    icon:'⚠️', title:'异常处置流程（第7章）', sub:'任何异常均须走此流程，不得跳过',
+    color:'#e74c3c', bg:'linear-gradient(135deg,#e74c3c,#c0392b)',
+    checks:[
+      {f:'① 暂停收货',n:'立即停止卸货/清点，保持物料原状'},
+      {f:'② 隔离标识',n:'转入"待判定"区，贴状态标识，注明批次/数量/日期'},
+      {f:'③ 通知与记录',n:'填写 WH003-F01 + QM083-F01，通知 QA/SC'},
+      {f:'④ QA 调查评估',n:'QA 组织评估，必要时启动偏差调查'},
+      {f:'⑤ 处置执行',n:'按批准方案：退货/换货/让步接收/挑选/报废'},
+      {f:'⑥ 归档关闭',n:'补齐所有记录，注明关闭人/日期，通知采购跟进整改'},
+    ],
+    tips:['让步接收须经授权人书面批准，不得擅自执行','涉及供应商的须同步反馈采购跟进整改'],
+    warn:'所有异常物料必须隔离标识，严禁擅自使用或入库上架'
+  }
+};
+
+// ═══════════════════════════════════════
+// MODAL
+// ═══════════════════════════════════════
+function openModal(id){
+  const d = STEPS[id]; if(!d) return;
+  document.getElementById('micon').textContent = d.icon;
+  document.getElementById('mtitle').textContent = d.title;
+  document.getElementById('msub').textContent = d.sub;
+  document.getElementById('mhead').style.background = d.bg;
+
+  let html = '';
+  // checklist
+  html += '<div class="ms"><div class="slabel">操作清单（可勾选）</div><div class="cl">';
+  d.checks.forEach((c,i)=>{
+    html += `<label class="cli" id="cli-${id}-${i}">
+      <input type="checkbox" onchange="toggleCheck('cli-${id}-${i}',this.checked)">
+      <div class="item-text"><div class="fn">${c.f}</div>${c.n?`<div class="fnt">${c.n}</div>`:''}
+      </div></label>`;
+  });
+  html += '</div></div>';
+
+  // tips
+  if(d.tips && d.tips.length){
+    html += '<div class="ms"><div class="slabel">操作要点</div><div class="tips">';
+    d.tips.forEach(t => html += `<div class="tip">💡 ${t}</div>`);
+    html += '</div></div>';
+  }
+  // warn
+  if(d.warn){
+    html += `<div class="ms"><div class="warnbox">⚠ ${d.warn}</div></div>`;
+  }
+  // actions
+  html += '<div class="mactions">';
+  if(d.hasVideo) html += '<button class="btn1" onclick="openVid()">🎬 查看SAP操作视频</button>';
+  html += '<button class="btn2" onclick="closeModal()">关闭</button></div>';
+
+  document.getElementById('mbody').innerHTML = html;
+  document.getElementById('overlay').classList.add('open');
+}
+function toggleCheck(id, checked){
+  document.getElementById(id).classList.toggle('done', checked);
+}
+function closeModal(){
+  const ov = document.getElementById('overlay');
+  const m  = document.getElementById('modal');
+  // 3D exit: tilt forward + shrink + drop
+  m.style.transform = 'perspective(900px) rotateX(10deg) scale(.88) translateY(30px)';
+  m.style.opacity   = '0';
+  m.style.transition = 'transform .22s ease-in, opacity .18s ease-in';
+  setTimeout(()=>{
+    ov.classList.remove('open');
+    m.style.transform = '';
+    m.style.opacity   = '';
+    m.style.transition= '';
+  }, 220);
+}
+function closeOverlay(e){ if(e.target===document.getElementById('overlay')) closeModal(); }
+
+// ═══════════════════════════════════════
+// VIDEO MODAL
+// ═══════════════════════════════════════
+function openVid(){ document.getElementById('voverlay').classList.add('open'); }
+function closeVid(e){
+  if(!e || e.target===document.getElementById('voverlay'))
+    document.getElementById('voverlay').classList.remove('open');
+}
+
+// ═══════════════════════════════════════
+// HIGHLIGHT STEP
+// ═══════════════════════════════════════
+function highlightStep(sid){
+  document.querySelectorAll('.sg').forEach(el=>el.classList.remove('hl'));
+  const el = document.getElementById('sg-'+sid);
+  if(el){ el.classList.add('hl'); el.scrollIntoView({behavior:'smooth',block:'center'}); }
+}
+
+// ═══════════════════════════════════════
+// CHATBOT
+// ═══════════════════════════════════════
+const QA = [
+  {kw:['三单','文件一致','送货单','COA','比对'],
+   ans:'「三单一致」需核对以下内容（三处完全相同）：\n• 物料编码\n• 物料名称\n• 批号\n• 生产日期 & 有效期\n• 供应商名称\n• 送货数量\n• PO 订单号\n\n任一不符立即停止收货，联系 SC。',
+   act:{type:'step',id:'s1',label:'查看 Step 1 详情'}},
+  {kw:['打印','WH003','表单','F01'],
+   ans:'需打印两份文件：\n1. PO 订单（SAP 打印）\n2. WH003-F01 来料检验记录表\n\n填写要求：蓝色签字笔，错误单横线更正+签名+日期，不得用涂改液。',
+   act:{type:'step',id:'s2',label:'查看 Step 2 详情'}},
+  {kw:['ME23N','PO状态','LA','开放'],
+   ans:'使用 SAP 事务码 ME23N 查看 PO 详情，检查 Confirmation 行中 LA 是否开放。\nLA 未开放不得进行收货过账，需联系 SC 处理。',
+   act:{type:'step',id:'s3',label:'查看 Step 3 详情'}},
+  {kw:['Pinmill','储存条件','power apps'],
+   ans:'Pinmill 原料需通过内网 Power Apps 查询储存条件，确认包装完好、无受潮污染、运输温度符合要求。\n不符合立即通知仓储主管评估。',
+   act:{type:'step',id:'p2',label:'查看 Step 5 详情'}},
+  {kw:['标签','审批','包材','已审批'],
+   ans:'进入特殊来料登记包材系统，输入物料编码查询标签审批状态。\n未通过审批的物料需通知 QA 处理。',
+   act:{type:'step',id:'p3',label:'查看标签查询详情'}},
+  {kw:['异常','拒收','不合格','有问题','怎么处理'],
+   ans:'发现异常走第7章流程：\n① 暂停收货\n② 隔离标识（贴"待判定"）\n③ 填写 WH003-F01 + QM083-F01\n④ 通知 QA/SC 评估\n⑤ 按批准方案处置\n⑥ 归档关闭',
+   act:{type:'step',id:'ex',label:'查看异常处置详情'}},
+  {kw:['SAP','入库','MIGO','过账','怎么录'],
+   ans:'SAP 入库使用 MIGO 事务码进行收货过账。有专门的操作培训视频，点击下方查看。',
+   act:{type:'video',label:'🎬 打开SAP培训视频'}},
+  {kw:['视频','培训','操作视频','演示'],
+   ans:'SAP 操作培训视频存放在公司内部共享盘，请联系仓库同事获取。',
+   act:{type:'video',label:'🎬 打开SAP培训视频'}},
+  {kw:['联系','找谁','谁负责','谁管'],
+   ans:'各产线联系人请咨询仓库主管。',
+   act:null},
+  {kw:['fefo','先进先出','先到期','效期'],
+   ans:'FEFO = First Expired First Out（先到期先用）。\n入库上架时，有效期早的物料放在前面优先取用，避免过期报废。',
+   act:null},
+  {kw:['让步','让步接收'],
+   ans:'让步接收是指物料轻微不符合但经评估可用，须由授权人书面批准后执行，不得擅自让步。',
+   act:{type:'step',id:'ex',label:'查看异常处置详情'}},
+];
+
+let chatReady = false;
+function toggleChat(){
+  const p = document.getElementById('cpanel');
+  const open = p.classList.toggle('open');
+  document.getElementById('cbtn').querySelector('.bdot').style.display = open?'none':'flex';
+  if(open && !chatReady){ chatReady=true; botSay('你好！我是收货小助手 🤖\n有任何来料收货的问题都可以问我，或者点击上方快捷按钮！',null); }
+}
+
+function sendMsg(){
+  const inp = document.getElementById('cinput');
+  const txt = inp.value.trim(); if(!txt) return;
+  inp.value='';
+  addMsg('user', txt);
+  const low = txt.toLowerCase();
+  let matched = null;
+  for(const q of QA){ if(q.kw.some(k=>low.includes(k))){ matched=q; break; } }
+  setTimeout(()=>{
+    if(matched) botSay(matched.ans, matched.act);
+    else botSay('抱歉我没有找到对应答案。\n请尝试关键词如：三单、SAP、异常、Pinmill、标签审批、联系人 等。\n或者直接点击流程图中的步骤查看详情。', null);
+  }, 600);
+}
+
+function askQuick(q){ document.getElementById('cinput').value=q; sendMsg(); }
+
+function botSay(text, act){
+  const msgs = document.getElementById('cmsgs');
+  let actHtml='';
+  if(act){
+    if(act.type==='step') actHtml=`<div class="cacts"><button class="cab" onclick="hlFromChat('${act.id}')">${act.label||'跳转到该步骤'}</button></div>`;
+    if(act.type==='video') actHtml=`<div class="cacts"><button class="cab" onclick="openVid()">${act.label||'查看视频'}</button></div>`;
+  }
+  const d=document.createElement('div');
+  d.className='cm bot';
+  d.innerHTML=`<div class="cav">🤖</div><div><div class="cb">${text}</div>${actHtml}</div>`;
+  msgs.appendChild(d);
+  msgs.scrollTop=msgs.scrollHeight;
+}
+function addMsg(role, text){
+  const msgs=document.getElementById('cmsgs');
+  const d=document.createElement('div');
+  d.className='cm '+role;
+  if(role==='bot') d.innerHTML=`<div class="cav">🤖</div><div class="cb">${text}</div>`;
+  else d.innerHTML=`<div class="cb">${text}</div>`;
+  msgs.appendChild(d);
+  msgs.scrollTop=msgs.scrollHeight;
+}
+function hlFromChat(sid){
+  openModal(sid);
+  highlightStep(sid);
+}
+</script>
 </body>
 </html>
