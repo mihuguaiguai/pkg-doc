@@ -1969,17 +1969,17 @@ const SD = {
 
 // ═══ SAP GUIDE ═══
 const SAP_STEPS = [
-  {img:'sap-imgs/step01.png', title:'Step 1 · 进入 MIGO', desc:'在 SAP Easy Access 顶部输入框中输入事务码 <b>MIGO</b>，按回车进入收货界面。'},
-  {img:'sap-imgs/step02.png', title:'Step 2 · 输入 PO 号', desc:'选择 <b>Goods Receipt → Purchase Order</b>，在右侧输入框填写 PO 号码，按回车加载订单行。'},
-  {img:'sap-imgs/step03.png', title:'Step 3 · 确认收货行', desc:'系统默认从<b>第一行</b>开始收货，可在下方 line 区域切换行，核对物料编码与名称是否正确。'},
-  {img:'sap-imgs/step04.png', title:'Step 4 · 填写数量（Quantity 标签页）', desc:'<b>CCM / RTU / IA</b>：包装数量填 <b>1</b><br><b>PIS</b>：根据最小包装量填写数量——桶/纸箱等按托盘数填，标签按盒数填。<br>No. of Containers 填实际容器数。'},
-  {img:'sap-imgs/step05.png', title:'Step 5 · 填写库位（Where 标签页）', desc:'Storage Location 按产线填写：<br>• 一般为 <b>0201</b>（Main Storage Loc）<br>• 罐区为 <b>0401</b>（Tank Farm）<br>• Solvent：<b>S001 / 0402</b><br>• Pinmill：<b>0203</b>'},
-  {img:'sap-imgs/step06.png', title:'Step 6 · Vendor COA（Purchase Order Data 标签页）', desc:'在 <b>Cert. enclosed?</b> / <b>Vendor COA</b> 下拉框中选择 <b>Yes</b>（表示供应商随货附带 COA）。'},
-  {img:'sap-imgs/step07.png', title:'Step 7 · 填写批号（Batch 标签页）', desc:'<b>Vendor Batch</b> 填写 COA 或实物标签上的<b>批号 / Charge 号 / LOT 号</b>，与实物完全一致。'},
-  {img:'sap-imgs/step08.png', title:'Step 8 · 填写生产日期', desc:'<b>Date of Manufacture</b>：填写 COA 或实物标签上的<b>生产日期 / Manufactured Date</b>。'},
-  {img:'sap-imgs/step09.png', title:'Step 9 · 填写有效期（SLED/BBD）', desc:'<b>SLED/BBD</b> = 有效期。COA 上有则直接抄写；罐区物料效期默认 <b>1年</b>；其他物料效期可参考 <b>QMO44 附表 / WH001 / 公盘文件</b>。'},
-  {img:'sap-imgs/step10.png', title:'Step 10 · Check 核对', desc:'① 勾选底部 <b>Item OK</b><br>② 点击顶部菜单栏 <b>Check</b> 按钮<br>③ 弹出日志窗口后，点击左下角 <b>✓（绿色勾）</b> 确认，忽略 Warning 提示。'},
-  {img:'sap-imgs/step11.png', title:'Step 11 · Post 过账', desc:'确认无误后，点击顶部 <b>Post</b> 按钮完成收货过账。系统会生成物料凭证号（Material Document）。'}
+  {img:'sap-imgs/step01.jpg', title:'Step 1 · 进入 MIGO', desc:'在 SAP Easy Access 顶部输入框中输入事务码 <b>MIGO</b>，按回车进入收货界面。'},
+  {img:'sap-imgs/step02.jpg', title:'Step 2 · 输入 PO 号', desc:'选择 <b>Goods Receipt → Purchase Order</b>，在右侧输入框填写 PO 号码，按回车加载订单行。'},
+  {img:'sap-imgs/step03.jpg', title:'Step 3 · 确认收货行', desc:'系统默认从<b>第一行</b>开始收货，可在下方 line 区域切换行，核对物料编码与名称是否正确。'},
+  {img:'sap-imgs/step04.jpg', title:'Step 4 · 填写数量（Quantity 标签页）', desc:'<b>CCM / RTU / IA</b>：包装数量填 <b>1</b><br><b>PIS</b>：根据最小包装量填写数量——桶/纸箱等按托盘数填，标签按盒数填。<br>No. of Containers 填实际容器数。'},
+  {img:'sap-imgs/step05.jpg', title:'Step 5 · 填写库位（Where 标签页）', desc:'Storage Location 按产线填写：<br>• 一般为 <b>0201</b>（Main Storage Loc）<br>• 罐区为 <b>0401</b>（Tank Farm）<br>• Solvent：<b>S001 / 0402</b><br>• Pinmill：<b>0203</b>'},
+  {img:'sap-imgs/step06.jpg', title:'Step 6 · Vendor COA（Purchase Order Data 标签页）', desc:'在 <b>Cert. enclosed?</b> / <b>Vendor COA</b> 下拉框中选择 <b>Yes</b>（表示供应商随货附带 COA）。'},
+  {img:'sap-imgs/step07.jpg', title:'Step 7 · 填写批号（Batch 标签页）', desc:'<b>Vendor Batch</b> 填写 COA 或实物标签上的<b>批号 / Charge 号 / LOT 号</b>，与实物完全一致。'},
+  {img:'sap-imgs/step08.jpg', title:'Step 8 · 填写生产日期', desc:'<b>Date of Manufacture</b>：填写 COA 或实物标签上的<b>生产日期 / Manufactured Date</b>。'},
+  {img:'sap-imgs/step09.jpg', title:'Step 9 · 填写有效期（SLED/BBD）', desc:'<b>SLED/BBD</b> = 有效期。COA 上有则直接抄写；罐区物料效期默认 <b>1年</b>；其他物料效期可参考 <b>QMO44 附表 / WH001 / 公盘文件</b>。'},
+  {img:'sap-imgs/step10.jpg', title:'Step 10 · Check 核对', desc:'① 勾选底部 <b>Item OK</b><br>② 点击顶部菜单栏 <b>Check</b> 按钮<br>③ 弹出日志窗口后，点击左下角 <b>✓（绿色勾）</b> 确认，忽略 Warning 提示。'},
+  {img:'sap-imgs/step11.jpg', title:'Step 11 · Post 过账', desc:'确认无误后，点击顶部 <b>Post</b> 按钮完成收货过账。系统会生成物料凭证号（Material Document）。'}
 ];
 let sapIdx = 0;
 function openSAPGuide(){
