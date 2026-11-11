@@ -57,6 +57,8 @@ body { font-family:'Segoe UI','Microsoft YaHei',sans-serif; background:var(--bg)
 
 
 .link-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:14px; }
+.link-group { font-size:13px; font-weight:700; color:var(--p400); letter-spacing:1px; margin:22px 0 10px; padding-left:4px; }
+.link-group:first-child { margin-top:4px; }
 .link-card { display:block; text-decoration:none; color:var(--text); background:var(--card); border:1.5px solid var(--p100); border-radius:14px; padding:16px 18px; box-shadow:0 2px 10px rgba(122,48,190,.06); transition:all .18s; }
 .link-card:hover { border-color:var(--p500); background:var(--p50); transform:translateY(-2px); box-shadow:0 5px 16px rgba(122,48,190,.18); }
 .link-name { font-size:14.5px; font-weight:700; color:var(--p700); margin-bottom:5px; }
@@ -91,7 +93,7 @@ body { font-family:'Segoe UI','Microsoft YaHei',sans-serif; background:var(--bg)
   <div id="quick-links" class="task-panel active">
     <div class="page-header">
       <h2>🔗 常用网站</h2>
-      <p>点击卡片在新标签页打开。需要增删网站时，修改页面底部脚本中的 QUICK_LINKS 列表即可。</p>
+      <p>点击卡片在新标签页打开。网站按用途分组，增删时修改页面底部脚本中的 QUICK_LINKS 列表即可（group 为组名，items 为该组下的网站）。</p>
     </div>
     <div class="link-grid" id="link-grid"></div>
   </div>
@@ -118,25 +120,39 @@ function checkPW(){
 <script>
 // 常用网站列表：按需修改名称 / 网址
 var QUICK_LINKS = [
-  { name: '物料标签审批系统', url: 'http://10.69.3.165:5156/login' },
-  { name: '仓库化学品混合存储矩阵', url: 'https://apps.powerapps.com/play/e/default-db76fb59-a377-4120-bc54-59dead7d39c9/a/7e33af24-bec4-4e29-a7af-1b898c04cccc?tenantId=db76fb59-a377-4120-bc54-59dead7d39c9&hint=b7801b7a-f021-4956-8a33-b11c8ff376c1&sourcetime=1789870807613' },
-  { name: '特殊来料登记包材网页', url: 'https://mihuguaiguai.github.io/pkg-doc/' },
-  { name: '来料收货操作指南', url: 'https://mihuguaiguai.github.io/pkg-doc/work-framework.html' },
-  { name: 'SAP 物料转库管理平台', url: 'http://10.69.96.45:3001/' },
-  { name: '线下物料追踪', url: 'http://10.69.97.254:3000/admin/inbound' },
-  { name: 'Merck Auth Service', url: 'https://10.69.3.165:5111/' },
-  { name: '仓库库位可视化平台', url: 'http://10.69.97.20:8888/' },
-  { name: 'SC 团队知识库', url: 'http://10.69.96.45:8080/#home' },
-  { name: 'Open PO 追踪平台', url: 'http://10.69.98.45:3000/' }
+  { group: '发送审批', items: [
+    { name: 'Merck Auth Service', url: 'https://10.69.3.165:5111/' },
+    { name: '物料标签审批系统', url: 'http://10.69.3.165:5156/login' },
+    { name: 'SAP 物料转库管理平台', url: 'http://10.69.96.45:3001/' }
+  ]},
+  { group: '库位存储', items: [
+    { name: '仓库化学品混合存储矩阵', url: 'https://apps.powerapps.com/play/e/default-db76fb59-a377-4120-bc54-59dead7d39c9/a/7e33af24-bec4-4e29-a7af-1b898c04cccc?tenantId=db76fb59-a377-4120-bc54-59dead7d39c9&hint=b7801b7a-f021-4956-8a33-b11c8ff376c1&sourcetime=1789870807613' },
+    { name: '仓库库位可视化平台', url: 'http://10.69.97.20:8888/' }
+  ]},
+  { group: '工作指导', items: [
+    { name: '来料收货操作指南', url: 'https://mihuguaiguai.github.io/pkg-doc/work-framework.html' },
+    { name: 'SC 团队知识库', url: 'http://10.69.96.45:8080/#home' },
+    { name: '特殊来料登记包材网页', url: 'https://mihuguaiguai.github.io/pkg-doc/' }
+  ]},
+  { group: '物料和订单追踪平台', items: [
+    { name: '线下物料追踪', url: 'http://10.69.97.254:3000/admin/inbound' },
+    { name: 'Open PO 追踪平台', url: 'http://10.69.98.45:3000/' }
+  ]}
 ];
 (function renderLinks() {
-  var g = document.getElementById('link-grid');
-  QUICK_LINKS.forEach(function(l) {
-    var a = document.createElement('a');
-    a.className = 'link-card'; a.href = l.url; a.target = '_blank'; a.rel = 'noopener';
-    var n = document.createElement('div'); n.className = 'link-name'; n.textContent = '🌐 ' + l.name;
-    var u = document.createElement('div'); u.className = 'link-url'; u.textContent = l.url;
-    a.appendChild(n); a.appendChild(u); g.appendChild(a);
+  var box = document.getElementById('link-grid');
+  box.className = '';
+  QUICK_LINKS.forEach(function(grp) {
+    var h = document.createElement('div'); h.className = 'link-group'; h.textContent = grp.group;
+    var g = document.createElement('div'); g.className = 'link-grid';
+    grp.items.forEach(function(l) {
+      var a = document.createElement('a');
+      a.className = 'link-card'; a.href = l.url; a.target = '_blank'; a.rel = 'noopener';
+      var n = document.createElement('div'); n.className = 'link-name'; n.textContent = '🌐 ' + l.name;
+      var u = document.createElement('div'); u.className = 'link-url'; u.textContent = l.url;
+      a.appendChild(n); a.appendChild(u); g.appendChild(a);
+    });
+    box.appendChild(h); box.appendChild(g);
   });
 })();
 
