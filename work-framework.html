@@ -21,7 +21,12 @@
 #page-0 .phase-label   { font-size: 13px !important; font-weight: 700 !important; }
 #page-0 .parallel-steps .flow-step { font-size: 13px !important; padding: 8px 12px !important; }
 #page-0 .parallel-label { font-size: 13px !important; padding: 2px 10px !important; }
-#page-0 .section-title { font-size: 15px !important; font-weight: 800 !important; }
+#page-0 .section-title { font-size: 24px !important; font-weight: 700 !important; }
+#page-0 .info-card h4 { font-size: 14px !important; font-weight: 800 !important; }
+#page-0 #sltab0, #page-0 #sltab1, #page-0 #sltab2, #page-0 #sltab3, #page-0 #sltab4, #page-0 #sltab5 { font-size: 20px !important; }
+#page-0 [id^="sl-panel-"] > div:first-child { font-size: 20px !important; }
+#page-0 .info-card ul li, #page-0 .info-card ul li * { font-size: 14px !important; }
+#page-0 .info-card div, #page-0 .info-card table, #page-0 .info-card th, #page-0 .info-card td { font-size: 14px !important; }
 #page-0 .back-btn      { font-size: 13px !important; }
 #page-0 .flow-step     { font-size: 13px !important; line-height: 1.5 !important; padding: 8px 12px !important; white-space: nowrap !important; }
 #page-0 .flow-step .sub { font-size: 10px !important; }
@@ -1312,8 +1317,96 @@ if(sessionStorage.getItem('wf_auth')==='123'){document.getElementById('pw-gate')
             <td style="padding:10px 14px;color:#333;">按COA报告日期计</td>
             <td style="padding:10px 14px;color:#333;">先按COA效期算，没有效期按1年减1天</td>
           </tr>
+          <tr style="background:#eaf4ff;border-top:1px solid #bde0ff;cursor:pointer;" onclick="rtToggle()" title="点击展开/收起清单">
+            <td style="padding:10px 14px;font-weight:700;color:#d50000;">原料复测期/有效期清单</td>
+            <td style="padding:10px 14px;color:#d50000;">—</td>
+            <td style="padding:10px 14px;color:#333;font-family:monospace;color:#d50000;">—</td>
+            <td style="padding:10px 14px;color:#d50000;font-weight:700;">QM044-F07（V5.0）</td>
+            <td style="padding:10px 14px;color:#d50000;font-weight:700;">按物料查复测期 / 有效期 <span id="rtArrow">▶ 点击展开</span></td>
+          </tr>
         </tbody>
       </table>
+
+      <!-- PIS 原料复测期/有效期清单（QM044-F07 V5.0，Doc ID 20631049，生效 2024-04-29） -->
+      <div id="rtPanel" style="display:none;margin-top:14px;font-family:sans-serif;">
+        <div style="background:#0a3a8a;color:#fff;font-size:13px;font-weight:700;padding:8px 14px;border-radius:2px;margin-bottom:10px;letter-spacing:1px;">
+          🧪 原料复测期 / 有效期清单（PIS）　<span style="font-weight:400;font-size:12px;">QM044-F07 · V5.0 · 生效 2024-04-29</span>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px;">
+          <input id="rtSearch" type="search" oninput="rtFilter()" placeholder="🔍 搜索物料代码 / 中英文名称 / 供应商 / 复测期…"
+                 style="flex:1;min-width:260px;padding:9px 12px;font-size:14px;border:2px solid #1565c0;border-radius:3px;outline:none;">
+          <span id="rtCount" style="font-size:13px;color:#0a3a8a;font-weight:700;"></span>
+        </div>
+        <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;font-size:13.5px;">
+            <thead><tr style="background:#1565c0;color:#fff;">
+              <th style="padding:9px 10px;text-align:left;">物料代码</th>
+              <th style="padding:9px 10px;text-align:left;">物料名称</th>
+              <th style="padding:9px 10px;text-align:left;">供应商</th>
+              <th style="padding:9px 10px;text-align:left;white-space:nowrap;">复测期</th>
+              <th style="padding:9px 10px;text-align:left;white-space:nowrap;">复测项目</th>
+              <th style="padding:9px 10px;text-align:left;white-space:nowrap;">有效期</th>
+            </tr></thead>
+            <tbody id="rtBody"></tbody>
+          </table>
+        </div>
+        <div id="rtEmpty" style="display:none;padding:18px;text-align:center;color:#666;">没有找到匹配的物料</div>
+        <div style="font-size:12px;color:#666;margin-top:8px;">说明：复测期 N/A 的物料供应商 COA 给的是有效期，按 QM044 不做复测，直接看有效期。来源：Doc ID 20631049。</div>
+      </div>
+      <script>
+      (function(){
+        // [代码, 英文名, 中文名, 供应商英文, 供应商中文, 复测期, 复测项目, 有效期]
+        var D=[
+          ['5762000000','Acetic Acid Bulk','乙酸','Celanses (Nanjing) Chemical Co., Ltd','塞拉尼斯（南京）化工有限公司','1 Year','Refer to TM576200','N/A'],
+          ['5762010000','Active Carbon','活性炭','Chemviron France SAS','','2 Years','Refer to TM576201','N/A'],
+          ['5762030000','Sodium Carbonate Bulk','碳酸钠','Guangzhou Guangshi Regent Technology Co., Ltd','广东广试试剂科技有限公司','20 Months','Refer to TM576203','N/A'],
+          ['5762040000','Hydrogen Peroxide 30% Bulk','双氧水','Guangzhou Guangshi Regent Technology Co., Ltd','广东广试试剂科技有限公司','11 Months','Refer to TM576204','N/A'],
+          ['5762050000','Zinc Oxide','氧化锌','EverZinc Nederland B.V.','','16 Months','Refer to TM576205','N/A'],
+          ['5762080000','Sulfuric Acid 98% Bulk','硫酸','Jiangyin Jianghua Micro Electronic Material Co., Ltd','江阴江化微电子材料股份有限公司','1 Year','Refer to TM576208','N/A'],
+          ['5762090000','Ammonia Sulfate Tech Bulk','硫酸铵','Jiangsu Kolod Food Ingredients Co., Ltd','江苏科伦多食品配料有限公司','N/A','N/A','18 Months'],
+          ['5762100000','Hydrochloric Acid','盐酸','Jiangyin Jianghua Micro Electronic Material Co., Ltd','江阴江化微电子材料股份有限公司','6 Months','Refer to TM576210','N/A'],
+          ['5762120000','Iron Flake','铁','Toho Zinc Co., Ltd','','5 Years','Refer to TM576212','N/A'],
+          ['5762150000','Sodium Hydroxide 48% Bulk','氢氧化钠','Shanghai Chlor-Alkali Chemical Co., ltd','上海氯碱化工股份有限公司','1 Year','Refer to TM576215','N/A'],
+          ['5762160000','Ammonia Solution 25% Bulk','氨水','Guangzhou Guangshi Regent Technology Co., Ltd','广东广试试剂科技有限公司','10 Months','Refer to TM576216','N/A'],
+          ['5762180000','Sodium Sulfate','硫酸钠','Jiangsu Kolod Food Ingredients Co., Ltd','江苏科伦多食品配料有限公司','N/A','N/A','18 Months'],
+          ['5762130000','ZINC OXIDE Bulk','氧化锌','EverZinc Nederland B.V.','','1 Year','Refer to TM576213','N/A'],
+          ['5762020000','CHLORINE GAS Bulk','氯气','Nantong Jiangshan Xinneng Technology Co., Ltd','南通江山新能科技有限公司','N/A','N/A','45 Days'],
+          ['5892520001','Sulfuric Acid 98%','硫酸98%','Jiangsu Yangheng Chemical Co., Ltd','江苏阳恒化工有限公司','1 Year','Refer to TM589252','N/A'],
+          ['5762060000','Phosphoric acid','磷酸','Taixing Yunphos Chemical Co., Ltd','泰兴市南磷化工有限公司','N/A','N/A','1 Year'],
+          ['5762070000','Aluminum Gran. 99.99% Bulk','散装99.99%铝粒','Jiangsu Daqi Metal Surface Treatment Co. LTD','江苏大奇金属表面处理有限公司','N/A','N/A','10 Years']
+        ];
+        function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+        function hl(s,q){
+          s=esc(s); if(!q) return s;
+          var e=esc(q).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+          return s.replace(new RegExp(e,'gi'),function(m){return '<mark style="background:#ffe066;padding:0 1px;">'+m+'</mark>';});
+        }
+        window.rtFilter=function(){
+          var q=document.getElementById('rtSearch').value.trim(), ql=q.toLowerCase(), h='', n=0;
+          D.forEach(function(r,i){
+            if(ql && r.join(' ').toLowerCase().indexOf(ql)<0) return;
+            n++;
+            var exp=r[7]!=='N/A', retest=r[5]!=='N/A';
+            h+='<tr style="background:'+(n%2?'#eaf4ff':'#fff')+';border-bottom:1px solid #bde0ff;">'
+              +'<td style="padding:8px 10px;font-family:monospace;font-weight:700;color:#0a3a8a;white-space:nowrap;">'+hl(r[0],q)+'</td>'
+              +'<td style="padding:8px 10px;color:#333;">'+hl(r[1],q)+'<br><span style="color:#666;font-size:12.5px;">'+hl(r[2],q)+'</span></td>'
+              +'<td style="padding:8px 10px;color:#333;font-size:12.5px;">'+hl(r[3],q)+(r[4]?'<br><span style="color:#666;">'+hl(r[4],q)+'</span>':'')+'</td>'
+              +'<td style="padding:8px 10px;white-space:nowrap;'+(retest?'font-weight:700;color:#0d47a1;':'color:#999;')+'">'+hl(r[5],q)+'</td>'
+              +'<td style="padding:8px 10px;color:#333;font-size:12.5px;">'+hl(r[6],q)+'</td>'
+              +'<td style="padding:8px 10px;white-space:nowrap;'+(exp?'font-weight:700;color:#b71c1c;':'color:#999;')+'">'+hl(r[7],q)+'</td></tr>';
+          });
+          document.getElementById('rtBody').innerHTML=h;
+          document.getElementById('rtEmpty').style.display=n?'none':'block';
+          document.getElementById('rtCount').textContent=q?('匹配 '+n+' / '+D.length+' 条'):('共 '+D.length+' 个物料');
+        };
+        window.rtToggle=function(){
+          var p=document.getElementById('rtPanel'), open=p.style.display==='none';
+          p.style.display=open?'block':'none';
+          document.getElementById('rtArrow').textContent=open?'▼ 点击收起':'▶ 点击展开';
+          if(open){ rtFilter(); document.getElementById('rtSearch').focus(); p.scrollIntoView({behavior:'smooth',block:'nearest'}); }
+        };
+      })();
+      </script>
 
       <div style="font-size:13px;color:#0a3a8a;font-weight:700;margin:16px 0 10px;">📷 实物标签示例</div>
       <div style="display:flex;gap:14px;flex-wrap:wrap;">
